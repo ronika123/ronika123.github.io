@@ -15,7 +15,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #000;
             color: white;
-            /* A magasságot JS-ben állítjuk be: 75vh */
+            /* A magasságot JS-ben állítjuk be */
         }
 
         /* ========== HAMBURGER MENÜ ========== */
@@ -428,9 +428,9 @@
         let currentFrame = -1;
         let allLoaded = false;
 
-        // 🆕 Body magasság: a jelenlegi 1/4-e = 75vh (300vh helyett)
+        // 🆕 Body magasság: 400vh = canvas(100vh) + 3 szekció(100vh each) = pont jó arány
         function setBodyHeight() {
-            document.body.style.height = '75vh';
+            document.body.style.height = '400vh';
         }
 
         function resizeCanvas() {
