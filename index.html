@@ -56,7 +56,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Menü lista (rejtett alapból) */
         .menu-list {
             position: absolute;
             top: 55px;
@@ -127,45 +126,6 @@
             z-index: 1;
         }
 
-        .hero-text {
-            position: absolute;
-            bottom: 20%;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2;
-            text-align: center;
-            width: 90%;
-            max-width: 650px;
-            
-            /* 🔄 MÓDOSÍTVA: Átlátszóbb, gyengébb elmosás */
-            background: rgba(10, 10, 10, 0.2);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(212, 165, 116, 0.2);
-            border-radius: 24px;
-            padding: 2.5rem 3rem;
-            
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        .hero-text h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 700;
-            background: linear-gradient(135deg, #d4a574, #f4d03f);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-            text-shadow: none;
-        }
-
-        .hero-text p {
-            font-size: 1rem;
-            color: rgba(255,255,255,0.9);
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-
         .scroll-indicator {
             position: absolute;
             bottom: 40px;
@@ -200,42 +160,123 @@
             background: linear-gradient(90deg, #d4a574, #f4d03f);
             width: 0%;
             box-shadow: 0 0 10px rgba(212, 165, 116, 0.5);
+            transition: width 0.3s ease;
         }
 
-        .loading {
+        /* ========== SKELETON LOADING ========== */
+        .skeleton-loading {
             position: fixed;
-            top: 50%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .skeleton-loading.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* Skeleton kártya - a canvas helyén */
+        .skeleton-canvas {
+            width: 90%;
+            max-width: 400px;
+            aspect-ratio: 9/16;
+            max-height: 70vh;
+            background: linear-gradient(90deg, 
+                rgba(212, 165, 116, 0.05) 0%, 
+                rgba(212, 165, 116, 0.12) 50%, 
+                rgba(212, 165, 116, 0.05) 100%);
+            background-size: 200% 100%;
+            border-radius: 16px;
+            animation: shimmer 1.8s infinite ease-in-out;
+            border: 1px solid rgba(212, 165, 116, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Piramis alakú skeleton a kártyán belül */
+        .skeleton-canvas::before {
+            content: '';
+            position: absolute;
+            bottom: 15%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            color: #d4a574;
-            font-size: 1.2rem;
-            text-align: center;
-            
-            background: rgba(10, 10, 10, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(212, 165, 116, 0.3);
-            border-radius: 20px;
-            padding: 30px 50px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 80px solid transparent;
+            border-right: 80px solid transparent;
+            border-bottom: 140px solid rgba(212, 165, 116, 0.08);
+            animation: shimmer 1.8s infinite ease-in-out;
         }
 
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(212, 165, 116, 0.2);
-            border-top: 3px solid #d4a574;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+        /* Skeleton szövegsorok */
+        .skeleton-text-container {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            width: 90%;
+            max-width: 350px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .skeleton-text {
+            height: 14px;
+            border-radius: 7px;
+            background: linear-gradient(90deg, 
+                rgba(212, 165, 116, 0.05) 0%, 
+                rgba(212, 165, 116, 0.12) 50%, 
+                rgba(212, 165, 116, 0.05) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s infinite ease-in-out;
         }
 
+        .skeleton-text:first-child {
+            width: 60%;
+            height: 18px;
+            border-radius: 9px;
+        }
+
+        .skeleton-text:nth-child(2) {
+            width: 85%;
+        }
+
+        .skeleton-text:nth-child(3) {
+            width: 70%;
+        }
+
+        .skeleton-text:nth-child(4) {
+            width: 50%;
+        }
+
+        /* Betöltési százalék */
+        .skeleton-progress {
+            margin-top: 25px;
+            color: rgba(212, 165, 116, 0.6);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        /* ========== TARTALMI SZEKCIÓK ========== */
         .content-section {
             min-height: 100vh;
             display: flex;
@@ -248,7 +289,6 @@
             pointer-events: none;
         }
 
-        /* 🔄 MÓDOSÍTVA: Átlátszóbb, gyengébb elmosású info kártya */
         .info-card {
             background: rgba(10, 10, 10, 0.2);
             backdrop-filter: blur(8px);
@@ -279,12 +319,6 @@
                 padding: 2rem 1.5rem; 
                 margin: 1rem; 
             }
-            
-            .hero-text { 
-                bottom: 20%;
-                padding: 1.5rem 2rem;
-                border-radius: 16px;
-            }
 
             .menu-container {
                 top: 15px;
@@ -296,11 +330,34 @@
                 height: 24px;
                 padding: 8px 6px;
             }
+
+            .skeleton-canvas {
+                max-width: 280px;
+                max-height: 60vh;
+            }
+
+            .skeleton-canvas::before {
+                border-left-width: 55px;
+                border-right-width: 55px;
+                border-bottom-width: 100px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- 🆕 HAMBURGER MENÜ -->
+    <!-- 🆕 SKELETON LOADING -->
+    <div class="skeleton-loading" id="skeletonLoading">
+        <div class="skeleton-canvas"></div>
+        <div class="skeleton-text-container">
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+        </div>
+        <div class="skeleton-progress" id="skeletonProgress">0%</div>
+    </div>
+
+    <!-- HAMBURGER MENÜ -->
     <div class="menu-container">
         <div class="hamburger-icon" id="hamburgerBtn">
             <span></span>
@@ -314,11 +371,6 @@
         </div>
     </div>
 
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <div>Képek betöltése: <span id="loadProgress">0</span> / 597</div>
-    </div>
-
     <div class="progress-container">
         <div class="progress-bar" id="progressBar"></div>
     </div>
@@ -326,14 +378,10 @@
     <div class="canvas-container" id="canvasSection">
         <canvas id="mainCanvas"></canvas>
         <div class="overlay"></div>
-        <div class="hero-text">
-            <h1>A Piramis Titka</h1>
-            <p>Műholdtól a bejáratig - egy lenyűgöző utazás</p>
-        </div>
+        <!-- A hero-text doboz TELJESEN ELTÁVOLÍTVA -->
         <div class="scroll-indicator">↓ Görgess lefelé ↓</div>
     </div>
 
-    <!-- 🆕 ID-kkal ellátott szekciók a navigációhoz -->
     <div class="content-section" id="bemutatkozas">
         <div class="info-card">
             <h2>🛰️ Bemutatkozás</h2>
@@ -362,8 +410,8 @@
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
         const progressBar = document.getElementById('progressBar');
-        const loadingDiv = document.getElementById('loading');
-        const loadProgress = document.getElementById('loadProgress');
+        const skeletonLoading = document.getElementById('skeletonLoading');
+        const skeletonProgress = document.getElementById('skeletonProgress');
 
         const frameCount = 597;
         const images = [];
@@ -392,11 +440,13 @@
                 
                 img.onload = () => {
                     imagesLoaded++;
-                    loadProgress.textContent = imagesLoaded + ' / ' + frameCount;
+                    const percent = Math.round((imagesLoaded / frameCount) * 100);
+                    skeletonProgress.textContent = percent + '%';
                     
                     if (imagesLoaded === frameCount) {
                         allLoaded = true;
-                        loadingDiv.style.display = 'none';
+                        // Skeleton eltüntetése animálva
+                        skeletonLoading.classList.add('hidden');
                         drawFrame(0);
                         console.log('✅ Mind az 597 kép betöltve!');
                     }
@@ -405,9 +455,12 @@
                 img.onerror = () => {
                     console.warn(`⚠️ Hiányzó: frame_${frameNumber}.webp`);
                     imagesLoaded++;
+                    const percent = Math.round((imagesLoaded / frameCount) * 100);
+                    skeletonProgress.textContent = percent + '%';
+                    
                     if (imagesLoaded === frameCount) {
                         allLoaded = true;
-                        loadingDiv.style.display = 'none';
+                        skeletonLoading.classList.add('hidden');
                         drawFrame(0);
                     }
                 };
@@ -416,7 +469,6 @@
             }
         }
 
-        // 🔄 Kettős rajzolás homályosított háttérrel
         function drawFrame(frameIndex) {
             if (frameIndex < 0 || frameIndex >= frameCount) return;
             
@@ -428,7 +480,7 @@
             const canvasRatio = canvas.width / canvas.height;
             const imgRatio = img.width / img.height;
             
-            // --- 1. LÉPÉS: Homályosított, nagyított háttér (Cover) ---
+            // Háttér: homályosított, nagyított (Cover)
             let bgWidth, bgHeight, bgX, bgY;
             
             if (imgRatio > canvasRatio) {
@@ -446,7 +498,7 @@
             ctx.filter = 'blur(40px) brightness(0.5)';
             ctx.drawImage(img, bgX, bgY, bgWidth, bgHeight);
             
-            // --- 2. LÉPÉS: Éles, méretarányos előtér (Contain) ---
+            // Előtér: éles, méretarányos (Contain)
             ctx.filter = 'none'; 
             
             let fgWidth, fgHeight, fgX, fgY;
@@ -487,7 +539,7 @@
             requestAnimationFrame(updateFrame);
         }
 
-        // ========== 🆕 HAMBURGER MENÜ MŰKÖDÉSE ==========
+        // ========== HAMBURGER MENÜ MŰKÖDÉSE ==========
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const menuList = document.getElementById('menuList');
 
@@ -496,7 +548,6 @@
             menuList.classList.toggle('active');
         });
 
-        // Kattintás a menüpontokra → görgetés a szekcióhoz + menü bezárása
         document.querySelectorAll('.menu-list a').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -509,14 +560,12 @@
             });
         });
 
-        // Kattintás bárhova a menün kívül → bezárás
         document.addEventListener('click', (e) => {
             if (!hamburgerBtn.contains(e.target) && !menuList.contains(e.target)) {
                 menuList.classList.remove('active');
             }
         });
 
-        // Érintőeszközökön is működjön
         document.addEventListener('touchstart', (e) => {
             if (!hamburgerBtn.contains(e.target) && !menuList.contains(e.target)) {
                 menuList.classList.remove('active');
