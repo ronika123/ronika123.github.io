@@ -18,6 +18,86 @@
             height: 600vh;
         }
 
+        /* ========== HAMBURGER MENÜ ========== */
+        .menu-container {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 1000;
+        }
+
+        .hamburger-icon {
+            width: 36px;
+            height: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            background: rgba(10, 10, 10, 0.3);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 8px;
+            padding: 10px 8px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(212, 165, 116, 0.25);
+        }
+
+        .hamburger-icon:hover {
+            background: rgba(10, 10, 10, 0.55);
+            border-color: rgba(212, 165, 116, 0.5);
+        }
+
+        .hamburger-icon span {
+            display: block;
+            width: 100%;
+            height: 2.5px;
+            background: #d4a574;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-list {
+            position: absolute;
+            top: 55px;
+            left: 0;
+            background: rgba(10, 10, 10, 0.3);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 12px;
+            padding: 12px 0;
+            min-width: 200px;
+            border: 1px solid rgba(212, 165, 116, 0.25);
+            transform: translateY(-10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .menu-list.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-list a {
+            display: block;
+            color: #d4a574;
+            text-decoration: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .menu-list a:hover {
+            background: rgba(212, 165, 116, 0.15);
+            padding-left: 28px;
+            color: #f4d03f;
+        }
+
+        /* ========== CANVAS ========== */
         .canvas-container {
             position: sticky;
             top: 0;
@@ -44,44 +124,6 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.2);
             z-index: 1;
-        }
-
-        .hero-text {
-            position: absolute;
-            bottom: 20%;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2;
-            text-align: center;
-            width: 90%;
-            max-width: 650px;
-            
-            background: rgba(10, 10, 10, 0.4);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(212, 165, 116, 0.2);
-            border-radius: 24px;
-            padding: 2.5rem 3rem;
-            
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        .hero-text h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 700;
-            background: linear-gradient(135deg, #d4a574, #f4d03f);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-            text-shadow: none;
-        }
-
-        .hero-text p {
-            font-size: 1rem;
-            color: rgba(255,255,255,0.9);
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         .scroll-indicator {
@@ -118,42 +160,119 @@
             background: linear-gradient(90deg, #d4a574, #f4d03f);
             width: 0%;
             box-shadow: 0 0 10px rgba(212, 165, 116, 0.5);
+            transition: width 0.3s ease;
         }
 
-        .loading {
+        /* ========== SKELETON LOADING ========== */
+        .skeleton-loading {
             position: fixed;
-            top: 50%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .skeleton-loading.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .skeleton-canvas {
+            width: 90%;
+            max-width: 400px;
+            aspect-ratio: 9/16;
+            max-height: 70vh;
+            background: linear-gradient(90deg, 
+                rgba(212, 165, 116, 0.05) 0%, 
+                rgba(212, 165, 116, 0.12) 50%, 
+                rgba(212, 165, 116, 0.05) 100%);
+            background-size: 200% 100%;
+            border-radius: 16px;
+            animation: shimmer 1.8s infinite ease-in-out;
+            border: 1px solid rgba(212, 165, 116, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skeleton-canvas::before {
+            content: '';
+            position: absolute;
+            bottom: 15%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            color: #d4a574;
-            font-size: 1.2rem;
-            text-align: center;
-            
-            background: rgba(10, 10, 10, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(212, 165, 116, 0.3);
-            border-radius: 20px;
-            padding: 30px 50px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 80px solid transparent;
+            border-right: 80px solid transparent;
+            border-bottom: 140px solid rgba(212, 165, 116, 0.08);
+            animation: shimmer 1.8s infinite ease-in-out;
         }
 
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(212, 165, 116, 0.2);
-            border-top: 3px solid #d4a574;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+        .skeleton-text-container {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            width: 90%;
+            max-width: 350px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .skeleton-text {
+            height: 14px;
+            border-radius: 7px;
+            background: linear-gradient(90deg, 
+                rgba(212, 165, 116, 0.05) 0%, 
+                rgba(212, 165, 116, 0.12) 50%, 
+                rgba(212, 165, 116, 0.05) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s infinite ease-in-out;
         }
 
+        .skeleton-text:first-child {
+            width: 60%;
+            height: 18px;
+            border-radius: 9px;
+        }
+
+        .skeleton-text:nth-child(2) {
+            width: 85%;
+        }
+
+        .skeleton-text:nth-child(3) {
+            width: 70%;
+        }
+
+        .skeleton-text:nth-child(4) {
+            width: 50%;
+        }
+
+        .skeleton-progress {
+            margin-top: 25px;
+            color: rgba(212, 165, 116, 0.6);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        /* ========== TARTALMI SZEKCIÓK ========== */
         .content-section {
             min-height: 100vh;
             display: flex;
@@ -167,9 +286,9 @@
         }
 
         .info-card {
-            background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            background: rgba(10, 10, 10, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border: 1px solid rgba(212, 165, 116, 0.2);
             border-radius: 24px;
             padding: 3rem;
@@ -196,20 +315,56 @@
                 padding: 2rem 1.5rem; 
                 margin: 1rem; 
             }
-            
-            .hero-text { 
-                bottom: 20%;
-                padding: 1.5rem 2rem;
-                border-radius: 16px;
+
+            .menu-container {
+                top: 15px;
+                left: 15px;
+            }
+
+            .hamburger-icon {
+                width: 30px;
+                height: 24px;
+                padding: 8px 6px;
+            }
+
+            .skeleton-canvas {
+                max-width: 280px;
+                max-height: 60vh;
+            }
+
+            .skeleton-canvas::before {
+                border-left-width: 55px;
+                border-right-width: 55px;
+                border-bottom-width: 100px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <!-- 🔄 JAVÍTVA: A letöltő szöveg 597-et mutat -->
-        <div>Képek betöltése: <span id="loadProgress">0</span> / 597</div>
+    <!-- SKELETON LOADING -->
+    <div class="skeleton-loading" id="skeletonLoading">
+        <div class="skeleton-canvas"></div>
+        <div class="skeleton-text-container">
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+        </div>
+        <div class="skeleton-progress" id="skeletonProgress">0%</div>
+    </div>
+
+    <!-- HAMBURGER MENÜ -->
+    <div class="menu-container">
+        <div class="hamburger-icon" id="hamburgerBtn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="menu-list" id="menuList">
+            <a href="#bemutatkozas">Bemutatkozás</a>
+            <a href="#multunk">Múltunk</a>
+            <a href="#elerhetoseg">Elérhetőség</a>
+        </div>
     </div>
 
     <div class="progress-container">
@@ -219,42 +374,57 @@
     <div class="canvas-container" id="canvasSection">
         <canvas id="mainCanvas"></canvas>
         <div class="overlay"></div>
-        <div class="hero-text">
-            <h1>A Piramis Titka</h1>
-            <p>Műholdtól a bejáratig - egy lenyűgöző utazás</p>
-        </div>
         <div class="scroll-indicator">↓ Görgess lefelé ↓</div>
     </div>
 
-    <div class="content-section">
+    <div class="content-section" id="bemutatkozas">
         <div class="info-card">
-            <h2>🛰️ Műholdperspektíva</h2>
-            <p>A kamera távolról közelít, felfedi a piramis monumentális méreteit és tökéletes geometriáját.</p>
+            <h2>🛰️ Bemutatkozás</h2>
+            <p>A kamera távolról közelít, felfedi a piramis monumentális méreteit és tökéletes geometriáját. Fedezd fel velünk az ősi Egyiptom rejtett csodáit.</p>
         </div>
     </div>
 
-    <div class="content-section">
+    <div class="content-section" id="multunk">
         <div class="info-card">
-            <h2>🔄 360°-os Fordulat</h2>
-            <p>Spirálozva ereszkedés közben minden oldalról bemutatja az építményt, feltárva szimmetriáját.</p>
+            <h2>📜 Múltunk</h2>
+            <p>Évtizedek óta kutatjuk az egyiptomi civilizáció emlékeit. Spirálozva ereszkedés közben minden oldalról bemutatjuk az építményt, feltárva szimmetriáját.</p>
         </div>
     </div>
 
-    <div class="content-section">
+    <div class="content-section" id="elerhetoseg">
         <div class="info-card">
-            <h2>🚪 A Bejárat</h2>
-            <p>Az utazás végén szemtől-szemben a piramis bejáratával - az ősi titkok kapujában.</p>
+            <h2>📬 Elérhetőség</h2>
+            <p>📧 kapcsolat@apiramistitka.hu<br>
+               📱 +36 30 123 4567<br>
+               📍 Budapest, Egyiptom sétány 1.<br><br>
+               Kövess minket, és légy részese az ősi titkok feltárásának!</p>
         </div>
     </div>
 
     <script>
+        // ========== 🆕 SCROLL RESTORATION KIKAPCSOLÁSA ==========
+        // Ez megakadályozza, hogy a böngésző emlékezzen az utolsó görgetési pozícióra
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        // Biztonsági mentés: az oldal betöltésekor azonnal a tetejére ugrunk
+        window.addEventListener('beforeunload', () => {
+            window.scrollTo(0, 0);
+        });
+
+        // DOM betöltése után is a tetejére ugrunk (biztos, ami biztos)
+        document.addEventListener('DOMContentLoaded', () => {
+            window.scrollTo(0, 0);
+        });
+
+        // ========== VÁLTOZÓK ==========
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
         const progressBar = document.getElementById('progressBar');
-        const loadingDiv = document.getElementById('loading');
-        const loadProgress = document.getElementById('loadProgress');
+        const skeletonLoading = document.getElementById('skeletonLoading');
+        const skeletonProgress = document.getElementById('skeletonProgress');
 
-        // 🔄 JAVÍTVA: A képkockák száma mostantól 597
         const frameCount = 597;
         const images = [];
         let imagesLoaded = 0;
@@ -278,16 +448,16 @@
                 const img = new Image();
                 const frameNumber = String(i + 1).padStart(4, '0');
                 
-                // 🔄 JAVÍTVA: Bekerült a 'Frames/' mappa az útvonalba
                 img.src = `https://ronika123.github.io/Frames/frame_${frameNumber}.webp`;
                 
                 img.onload = () => {
                     imagesLoaded++;
-                    loadProgress.textContent = imagesLoaded + ' / ' + frameCount;
+                    const percent = Math.round((imagesLoaded / frameCount) * 100);
+                    skeletonProgress.textContent = percent + '%';
                     
                     if (imagesLoaded === frameCount) {
                         allLoaded = true;
-                        loadingDiv.style.display = 'none';
+                        skeletonLoading.classList.add('hidden');
                         drawFrame(0);
                         console.log('✅ Mind az 597 kép betöltve!');
                     }
@@ -296,9 +466,12 @@
                 img.onerror = () => {
                     console.warn(`⚠️ Hiányzó: frame_${frameNumber}.webp`);
                     imagesLoaded++;
+                    const percent = Math.round((imagesLoaded / frameCount) * 100);
+                    skeletonProgress.textContent = percent + '%';
+                    
                     if (imagesLoaded === frameCount) {
                         allLoaded = true;
-                        loadingDiv.style.display = 'none';
+                        skeletonLoading.classList.add('hidden');
                         drawFrame(0);
                     }
                 };
@@ -318,21 +491,42 @@
             const canvasRatio = canvas.width / canvas.height;
             const imgRatio = img.width / img.height;
             
-            let drawWidth, drawHeight, x, y;
+            // Háttér: homályosított, nagyított (Cover)
+            let bgWidth, bgHeight, bgX, bgY;
             
             if (imgRatio > canvasRatio) {
-                drawHeight = canvas.height;
-                drawWidth = drawHeight * imgRatio;
-                x = (canvas.width - drawWidth) / 2;
-                y = 0;
+                bgHeight = canvas.height;
+                bgWidth = bgHeight * imgRatio;
+                bgX = (canvas.width - bgWidth) / 2;
+                bgY = 0;
             } else {
-                drawWidth = canvas.width;
-                drawHeight = drawWidth / imgRatio;
-                x = 0;
-                y = (canvas.height - drawHeight) / 2;
+                bgWidth = canvas.width;
+                bgHeight = bgWidth / imgRatio;
+                bgX = 0;
+                bgY = (canvas.height - bgHeight) / 2;
             }
             
-            ctx.drawImage(img, x, y, drawWidth, drawHeight);
+            ctx.filter = 'blur(40px) brightness(0.5)';
+            ctx.drawImage(img, bgX, bgY, bgWidth, bgHeight);
+            
+            // Előtér: éles, méretarányos (Contain)
+            ctx.filter = 'none'; 
+            
+            let fgWidth, fgHeight, fgX, fgY;
+            
+            if (imgRatio < canvasRatio) {
+                fgHeight = canvas.height;
+                fgWidth = fgHeight * imgRatio;
+                fgX = (canvas.width - fgWidth) / 2;
+                fgY = 0;
+            } else {
+                fgWidth = canvas.width;
+                fgHeight = fgWidth / imgRatio;
+                fgX = 0;
+                fgY = (canvas.height - fgHeight) / 2;
+            }
+            
+            ctx.drawImage(img, fgX, fgY, fgWidth, fgHeight);
         }
 
         function updateFrame() {
@@ -355,6 +549,39 @@
             
             requestAnimationFrame(updateFrame);
         }
+
+        // ========== HAMBURGER MENÜ MŰKÖDÉSE ==========
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const menuList = document.getElementById('menuList');
+
+        hamburgerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menuList.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.menu-list a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+                menuList.classList.remove('active');
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!hamburgerBtn.contains(e.target) && !menuList.contains(e.target)) {
+                menuList.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('touchstart', (e) => {
+            if (!hamburgerBtn.contains(e.target) && !menuList.contains(e.target)) {
+                menuList.classList.remove('active');
+            }
+        }, { passive: true });
 
         loadImages();
         updateFrame();
