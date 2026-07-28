@@ -185,7 +185,6 @@
             pointer-events: none;
         }
 
-        /* Skeleton kártya - a canvas helyén */
         .skeleton-canvas {
             width: 90%;
             max-width: 400px;
@@ -203,7 +202,6 @@
             overflow: hidden;
         }
 
-        /* Piramis alakú skeleton a kártyán belül */
         .skeleton-canvas::before {
             content: '';
             position: absolute;
@@ -218,7 +216,6 @@
             animation: shimmer 1.8s infinite ease-in-out;
         }
 
-        /* Skeleton szövegsorok */
         .skeleton-text-container {
             margin-top: 30px;
             display: flex;
@@ -258,7 +255,6 @@
             width: 50%;
         }
 
-        /* Betöltési százalék */
         .skeleton-progress {
             margin-top: 25px;
             color: rgba(212, 165, 116, 0.6);
@@ -345,7 +341,7 @@
     </style>
 </head>
 <body>
-    <!-- 🆕 SKELETON LOADING -->
+    <!-- SKELETON LOADING -->
     <div class="skeleton-loading" id="skeletonLoading">
         <div class="skeleton-canvas"></div>
         <div class="skeleton-text-container">
@@ -378,7 +374,6 @@
     <div class="canvas-container" id="canvasSection">
         <canvas id="mainCanvas"></canvas>
         <div class="overlay"></div>
-        <!-- A hero-text doboz TELJESEN ELTÁVOLÍTVA -->
         <div class="scroll-indicator">↓ Görgess lefelé ↓</div>
     </div>
 
@@ -407,6 +402,23 @@
     </div>
 
     <script>
+        // ========== 🆕 SCROLL RESTORATION KIKAPCSOLÁSA ==========
+        // Ez megakadályozza, hogy a böngésző emlékezzen az utolsó görgetési pozícióra
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        // Biztonsági mentés: az oldal betöltésekor azonnal a tetejére ugrunk
+        window.addEventListener('beforeunload', () => {
+            window.scrollTo(0, 0);
+        });
+
+        // DOM betöltése után is a tetejére ugrunk (biztos, ami biztos)
+        document.addEventListener('DOMContentLoaded', () => {
+            window.scrollTo(0, 0);
+        });
+
+        // ========== VÁLTOZÓK ==========
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
         const progressBar = document.getElementById('progressBar');
@@ -445,7 +457,6 @@
                     
                     if (imagesLoaded === frameCount) {
                         allLoaded = true;
-                        // Skeleton eltüntetése animálva
                         skeletonLoading.classList.add('hidden');
                         drawFrame(0);
                         console.log('✅ Mind az 597 kép betöltve!');
