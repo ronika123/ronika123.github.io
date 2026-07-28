@@ -15,7 +15,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #000;
             color: white;
-            height: 600vh;
+            /* 🆕 A magasságot JS-ben állítjuk be dinamikusan */
         }
 
         /* ========== HAMBURGER MENÜ ========== */
@@ -402,18 +402,15 @@
     </div>
 
     <script>
-        // ========== 🆕 SCROLL RESTORATION KIKAPCSOLÁSA ==========
-        // Ez megakadályozza, hogy a böngésző emlékezzen az utolsó görgetési pozícióra
+        // ========== SCROLL RESTORATION KIKAPCSOLÁSA ==========
         if ('scrollRestoration' in history) {
             history.scrollRestoration = 'manual';
         }
 
-        // Biztonsági mentés: az oldal betöltésekor azonnal a tetejére ugrunk
         window.addEventListener('beforeunload', () => {
             window.scrollTo(0, 0);
         });
 
-        // DOM betöltése után is a tetejére ugrunk (biztos, ami biztos)
         document.addEventListener('DOMContentLoaded', () => {
             window.scrollTo(0, 0);
         });
@@ -425,19 +422,30 @@
         const skeletonLoading = document.getElementById('skeletonLoading');
         const skeletonProgress = document.getElementById('skeletonProgress');
 
-        const frameCount = 597;
+        // 🆕 399 képkocka
+        const frameCount = 399;
         const images = [];
         let imagesLoaded = 0;
         let currentFrame = -1;
         let allLoaded = false;
 
+        // 🆕 Dinamikus body magasság: 3 szekció × 100vh
+        function setBodyHeight() {
+            const sectionCount = 3; // Bemutatkozás, Múltunk, Elérhetőség
+            document.body.style.height = (sectionCount * window.innerHeight) + 'px';
+        }
+
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
+        
         resizeCanvas();
+        setBodyHeight();
+        
         window.addEventListener('resize', () => {
             resizeCanvas();
+            setBodyHeight();
             if (allLoaded && currentFrame >= 0) {
                 drawFrame(currentFrame);
             }
@@ -459,7 +467,7 @@
                         allLoaded = true;
                         skeletonLoading.classList.add('hidden');
                         drawFrame(0);
-                        console.log('✅ Mind az 597 kép betöltve!');
+                        console.log('✅ Mind a(z) ' + frameCount + ' kép betöltve!');
                     }
                 };
                 
