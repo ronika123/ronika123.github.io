@@ -208,7 +208,6 @@
 <body>
     <div class="loading" id="loading">
         <div class="spinner"></div>
-        <!-- 🔄 JAVÍTVA: A letöltő szöveg 597-et mutat -->
         <div>Képek betöltése: <span id="loadProgress">0</span> / 597</div>
     </div>
 
@@ -254,7 +253,6 @@
         const loadingDiv = document.getElementById('loading');
         const loadProgress = document.getElementById('loadProgress');
 
-        // 🔄 JAVÍTVA: A képkockák száma mostantól 597
         const frameCount = 597;
         const images = [];
         let imagesLoaded = 0;
@@ -278,7 +276,6 @@
                 const img = new Image();
                 const frameNumber = String(i + 1).padStart(4, '0');
                 
-                // 🔄 JAVÍTVA: Bekerült a 'Frames/' mappa az útvonalba
                 img.src = `https://ronika123.github.io/Frames/frame_${frameNumber}.webp`;
                 
                 img.onload = () => {
@@ -307,6 +304,7 @@
             }
         }
 
+        // 🔄 ÚJ MEGOLDÁS: Kettős rajzolás homályosított háttérrel
         function drawFrame(frameIndex) {
             if (frameIndex < 0 || frameIndex >= frameCount) return;
             
@@ -318,21 +316,45 @@
             const canvasRatio = canvas.width / canvas.height;
             const imgRatio = img.width / img.height;
             
-            let drawWidth, drawHeight, x, y;
+            // --- 1. LÉPÉS: Homályosított, nagyított háttér (Cover) ---
+            let bgWidth, bgHeight, bgX, bgY;
             
             if (imgRatio > canvasRatio) {
-                drawHeight = canvas.height;
-                drawWidth = drawHeight * imgRatio;
-                x = (canvas.width - drawWidth) / 2;
-                y = 0;
+                bgHeight = canvas.height;
+                bgWidth = bgHeight * imgRatio;
+                bgX = (canvas.width - bgWidth) / 2;
+                bgY = 0;
             } else {
-                drawWidth = canvas.width;
-                drawHeight = drawWidth / imgRatio;
-                x = 0;
-                y = (canvas.height - drawHeight) / 2;
+                bgWidth = canvas.width;
+                bgHeight = bgWidth / imgRatio;
+                bgX = 0;
+                bgY = (canvas.height - bgHeight) / 2;
             }
             
-            ctx.drawImage(img, x, y, drawWidth, drawHeight);
+            // Szűrő beállítása (homályosítás + kis sötétítés, hogy a fő videó jobban kitűnjön)
+            ctx.filter = 'blur(40px) brightness(0.5)';
+            ctx.drawImage(img, bgX, bgY, bgWidth, bgHeight);
+            
+            
+            // --- 2. LÉPÉS: Éles, méretarányos előtér (Contain) ---
+            // Fontos: Visszaállítjuk a szűrőt, hogy a fő videó éles maradjon!
+            ctx.filter = 'none'; 
+            
+            let fgWidth, fgHeight, fgX, fgY;
+            
+            if (imgRatio < canvasRatio) {
+                fgHeight = canvas.height;
+                fgWidth = fgHeight * imgRatio;
+                fgX = (canvas.width - fgWidth) / 2;
+                fgY = 0;
+            } else {
+                fgWidth = canvas.width;
+                fgHeight = fgWidth / imgRatio;
+                fgX = 0;
+                fgY = (canvas.height - fgHeight) / 2;
+            }
+            
+            ctx.drawImage(img, fgX, fgY, fgWidth, fgHeight);
         }
 
         function updateFrame() {
