@@ -18,6 +18,87 @@
             height: 600vh;
         }
 
+        /* ========== HAMBURGER MENÜ ========== */
+        .menu-container {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 1000;
+        }
+
+        .hamburger-icon {
+            width: 36px;
+            height: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            background: rgba(10, 10, 10, 0.3);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 8px;
+            padding: 10px 8px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(212, 165, 116, 0.25);
+        }
+
+        .hamburger-icon:hover {
+            background: rgba(10, 10, 10, 0.55);
+            border-color: rgba(212, 165, 116, 0.5);
+        }
+
+        .hamburger-icon span {
+            display: block;
+            width: 100%;
+            height: 2.5px;
+            background: #d4a574;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        /* Menü lista (rejtett alapból) */
+        .menu-list {
+            position: absolute;
+            top: 55px;
+            left: 0;
+            background: rgba(10, 10, 10, 0.3);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 12px;
+            padding: 12px 0;
+            min-width: 200px;
+            border: 1px solid rgba(212, 165, 116, 0.25);
+            transform: translateY(-10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .menu-list.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-list a {
+            display: block;
+            color: #d4a574;
+            text-decoration: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .menu-list a:hover {
+            background: rgba(212, 165, 116, 0.15);
+            padding-left: 28px;
+            color: #f4d03f;
+        }
+
+        /* ========== CANVAS ========== */
         .canvas-container {
             position: sticky;
             top: 0;
@@ -56,9 +137,10 @@
             width: 90%;
             max-width: 650px;
             
-            background: rgba(10, 10, 10, 0.4);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            /* 🔄 MÓDOSÍTVA: Átlátszóbb, gyengébb elmosás */
+            background: rgba(10, 10, 10, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border: 1px solid rgba(212, 165, 116, 0.2);
             border-radius: 24px;
             padding: 2.5rem 3rem;
@@ -166,10 +248,11 @@
             pointer-events: none;
         }
 
+        /* 🔄 MÓDOSÍTVA: Átlátszóbb, gyengébb elmosású info kártya */
         .info-card {
-            background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            background: rgba(10, 10, 10, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border: 1px solid rgba(212, 165, 116, 0.2);
             border-radius: 24px;
             padding: 3rem;
@@ -202,10 +285,35 @@
                 padding: 1.5rem 2rem;
                 border-radius: 16px;
             }
+
+            .menu-container {
+                top: 15px;
+                left: 15px;
+            }
+
+            .hamburger-icon {
+                width: 30px;
+                height: 24px;
+                padding: 8px 6px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- 🆕 HAMBURGER MENÜ -->
+    <div class="menu-container">
+        <div class="hamburger-icon" id="hamburgerBtn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="menu-list" id="menuList">
+            <a href="#bemutatkozas">Bemutatkozás</a>
+            <a href="#multunk">Múltunk</a>
+            <a href="#elerhetoseg">Elérhetőség</a>
+        </div>
+    </div>
+
     <div class="loading" id="loading">
         <div class="spinner"></div>
         <div>Képek betöltése: <span id="loadProgress">0</span> / 597</div>
@@ -225,24 +333,28 @@
         <div class="scroll-indicator">↓ Görgess lefelé ↓</div>
     </div>
 
-    <div class="content-section">
+    <!-- 🆕 ID-kkal ellátott szekciók a navigációhoz -->
+    <div class="content-section" id="bemutatkozas">
         <div class="info-card">
-            <h2>🛰️ Műholdperspektíva</h2>
-            <p>A kamera távolról közelít, felfedi a piramis monumentális méreteit és tökéletes geometriáját.</p>
+            <h2>🛰️ Bemutatkozás</h2>
+            <p>A kamera távolról közelít, felfedi a piramis monumentális méreteit és tökéletes geometriáját. Fedezd fel velünk az ősi Egyiptom rejtett csodáit.</p>
         </div>
     </div>
 
-    <div class="content-section">
+    <div class="content-section" id="multunk">
         <div class="info-card">
-            <h2>🔄 360°-os Fordulat</h2>
-            <p>Spirálozva ereszkedés közben minden oldalról bemutatja az építményt, feltárva szimmetriáját.</p>
+            <h2>📜 Múltunk</h2>
+            <p>Évtizedek óta kutatjuk az egyiptomi civilizáció emlékeit. Spirálozva ereszkedés közben minden oldalról bemutatjuk az építményt, feltárva szimmetriáját.</p>
         </div>
     </div>
 
-    <div class="content-section">
+    <div class="content-section" id="elerhetoseg">
         <div class="info-card">
-            <h2>🚪 A Bejárat</h2>
-            <p>Az utazás végén szemtől-szemben a piramis bejáratával - az ősi titkok kapujában.</p>
+            <h2>📬 Elérhetőség</h2>
+            <p>📧 kapcsolat@apiramistitka.hu<br>
+               📱 +36 30 123 4567<br>
+               📍 Budapest, Egyiptom sétány 1.<br><br>
+               Kövess minket, és légy részese az ősi titkok feltárásának!</p>
         </div>
     </div>
 
@@ -304,7 +416,7 @@
             }
         }
 
-        // 🔄 ÚJ MEGOLDÁS: Kettős rajzolás homályosított háttérrel
+        // 🔄 Kettős rajzolás homályosított háttérrel
         function drawFrame(frameIndex) {
             if (frameIndex < 0 || frameIndex >= frameCount) return;
             
@@ -331,13 +443,10 @@
                 bgY = (canvas.height - bgHeight) / 2;
             }
             
-            // Szűrő beállítása (homályosítás + kis sötétítés, hogy a fő videó jobban kitűnjön)
             ctx.filter = 'blur(40px) brightness(0.5)';
             ctx.drawImage(img, bgX, bgY, bgWidth, bgHeight);
             
-            
             // --- 2. LÉPÉS: Éles, méretarányos előtér (Contain) ---
-            // Fontos: Visszaállítjuk a szűrőt, hogy a fő videó éles maradjon!
             ctx.filter = 'none'; 
             
             let fgWidth, fgHeight, fgX, fgY;
@@ -377,6 +486,42 @@
             
             requestAnimationFrame(updateFrame);
         }
+
+        // ========== 🆕 HAMBURGER MENÜ MŰKÖDÉSE ==========
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const menuList = document.getElementById('menuList');
+
+        hamburgerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menuList.classList.toggle('active');
+        });
+
+        // Kattintás a menüpontokra → görgetés a szekcióhoz + menü bezárása
+        document.querySelectorAll('.menu-list a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+                menuList.classList.remove('active');
+            });
+        });
+
+        // Kattintás bárhova a menün kívül → bezárás
+        document.addEventListener('click', (e) => {
+            if (!hamburgerBtn.contains(e.target) && !menuList.contains(e.target)) {
+                menuList.classList.remove('active');
+            }
+        });
+
+        // Érintőeszközökön is működjön
+        document.addEventListener('touchstart', (e) => {
+            if (!hamburgerBtn.contains(e.target) && !menuList.contains(e.target)) {
+                menuList.classList.remove('active');
+            }
+        }, { passive: true });
 
         loadImages();
         updateFrame();
