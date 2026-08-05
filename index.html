@@ -74,7 +74,7 @@
           </div>
         </div>
 
-        <!-- Desktop Navigation Menu -->
+        <!-- Desktop Navigation Menu (Filtered: Removed Beállítások, Eszközök, Automatizálás) -->
         <nav class="space-y-1">
           <button data-tab="fooldal" class="nav-btn active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent transition text-left">
             <i class="fa-solid fa-house w-4 text-center"></i>
@@ -99,18 +99,6 @@
           <button data-tab="grafikonok" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent transition text-left">
             <i class="fa-solid fa-chart-line w-4 text-center"></i>
             <span>Grafikonok</span>
-          </button>
-          <button data-tab="eszkozok" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent transition text-left">
-            <i class="fa-solid fa-border-all w-4 text-center"></i>
-            <span>Eszközök</span>
-          </button>
-          <button data-tab="automatizalas" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent transition text-left">
-            <i class="fa-solid fa-sliders w-4 text-center"></i>
-            <span>Automatizálás</span>
-          </button>
-          <button data-tab="beallitasok" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent transition text-left">
-            <i class="fa-solid fa-gear w-4 text-center"></i>
-            <span>Beállítások</span>
           </button>
         </nav>
       </div>
@@ -139,7 +127,6 @@
       <!-- HEADER TOP BAR -->
       <header class="flex flex-col gap-3">
         <div class="flex items-center justify-between">
-          <!-- Mobile Brand Title Header -->
           <div class="flex items-center gap-2 lg:hidden">
             <div class="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center text-white text-xs">
               <i class="fa-solid fa-snake"></i>
@@ -159,7 +146,7 @@
           </div>
         </div>
 
-        <!-- TOP STAT CARDS (Responsive Grid: 2 columns on mobile, 5 on desktop) -->
+        <!-- TOP STAT CARDS -->
         <div class="grid grid-cols-2 lg:grid-cols-5 gap-2.5 lg:gap-3">
           <div class="bg-[#111622] border border-[#1c2436] rounded-2xl p-3 lg:p-3.5 flex items-center justify-between">
             <div>
@@ -473,8 +460,8 @@
                 <div class="text-sm font-semibold text-slate-200">Klímák</div>
                 <button data-tab-link="klima" class="text-xs text-emerald-400 hover:text-emerald-300 font-medium">Megnyitás <i class="fa-solid fa-arrow-right text-[10px]"></i></button>
               </div>
-              <div id="climate-list" class="space-y-2.5">
-                <div class="py-4 text-center text-slate-500 font-mono text-[11px]">Nincsenek elérhető klímák</div>
+              <div id="climate-list-summary" class="space-y-2.5">
+                <div class="py-4 text-center text-slate-500 font-mono text-[11px]">Nincsenek adatok</div>
               </div>
             </div>
           </div>
@@ -514,18 +501,30 @@
             </div>
           </div>
 
-          <!-- ROW 3 COL 2: Spot Price Chart -->
+          <!-- ROW 3 COL 2: Spot Price Chart (EUR/kWh for Slovakia) -->
           <div class="lg:col-span-4 bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-5">
-            <div class="text-sm font-semibold text-slate-200 mb-1">Energiaár (HUF/kWh)</div>
+            <div class="text-sm font-semibold text-slate-200 mb-1">Energiaár (EUR/kWh)</div>
             <div class="flex items-baseline justify-between mb-3">
               <div>
                 <span class="text-[11px] text-slate-400">Jelenlegi ár</span>
-                <div id="spot-price-current" class="text-base lg:text-lg font-bold text-emerald-400 font-mono">-- Ft</div>
+                <div id="spot-price-current" class="text-base lg:text-lg font-bold text-emerald-400 font-mono">-- EUR/kWh</div>
               </div>
               <div class="text-right">
-                <span class="text-[11px] text-slate-400">Következő változás</span>
-                <div id="spot-price-next" class="text-xs font-bold text-slate-300 font-mono">--</div>
+                <span class="text-[11px] text-slate-400">Bidding Zone</span>
+                <div id="spot-price-next" class="text-xs font-bold text-slate-300 font-mono">SK (Slovakia)</div>
               </div>
+            </div>
+            <div class="relative h-24 w-full bg-[#070b12]/60 rounded-xl p-2 border border-slate-800/60">
+              <svg id="price-svg-chart" class="w-full h-full overflow-visible" viewBox="0 0 300 80" preserveAspectRatio="none">
+                <path id="price-path" d="" fill="none" stroke="#10b981" stroke-width="2"/>
+                <path id="price-area" d="" fill="url(#priceLiveGrad)" opacity="0.25"/>
+                <defs>
+                  <linearGradient id="priceLiveGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#10b981" />
+                    <stop offset="100%" stop-color="#10b981" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
           </div>
 
@@ -548,15 +547,15 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs">
             <div class="bg-[#070b12] p-3 lg:p-4 rounded-xl border border-slate-800">
               <span class="text-slate-400 block mb-1">L1 Fázisfeszültség</span>
-              <span class="text-base lg:text-lg font-bold text-white">231.4 V</span>
+              <span id="l1-voltage" class="text-base lg:text-lg font-bold text-white">-- V</span>
             </div>
             <div class="bg-[#070b12] p-3 lg:p-4 rounded-xl border border-slate-800">
               <span class="text-slate-400 block mb-1">L2 Fázisfeszültség</span>
-              <span class="text-base lg:text-lg font-bold text-white">229.8 V</span>
+              <span id="l2-voltage" class="text-base lg:text-lg font-bold text-white">-- V</span>
             </div>
             <div class="bg-[#070b12] p-3 lg:p-4 rounded-xl border border-slate-800">
               <span class="text-slate-400 block mb-1">L3 Fázisfeszültség</span>
-              <span class="text-base lg:text-lg font-bold text-white">230.1 V</span>
+              <span id="l3-voltage" class="text-base lg:text-lg font-bold text-white">-- V</span>
             </div>
           </div>
         </div>
@@ -570,44 +569,77 @@
         </div>
       </section>
 
-      <!-- VIEW TAB 4: KLÍMA -->
+      <!-- VIEW TAB 4: KLÍMA (WITH TARGET TEMPERATURE ADJUSTMENT CONTROLS) -->
       <section id="view-klima" class="tab-view hidden space-y-4">
         <div class="bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-6">
           <h2 class="text-base lg:text-lg font-bold text-white mb-2"><i class="fa-solid fa-snowflake text-sky-400 mr-2"></i>Klíma Vezérlés</h2>
           <p class="text-xs text-slate-400 mb-6">Helyiségek célhőmérsékletei és klímaberendezések állapota</p>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-            <div class="bg-[#070b12] p-3 lg:p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+            <!-- Nappali -->
+            <div class="bg-[#070b12] p-4 rounded-xl border border-slate-800 flex items-center justify-between">
               <div>
                 <span class="font-bold text-slate-200 block text-sm">Nappali</span>
-                <span class="text-slate-400 font-mono">Cél: 24°C</span>
+                <span id="klima-nappali-current" class="text-slate-400 font-mono">Mért: --°C</span>
               </div>
-              <button class="px-3 py-1.5 rounded-lg font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ON</button>
+              <div class="flex items-center gap-3">
+                <div class="flex items-center bg-[#111622] border border-slate-800 rounded-lg font-mono">
+                  <button onclick="adjustClimateTemp('nappali', -0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-r border-slate-800">-</button>
+                  <span id="klima-nappali-target" class="px-3 font-bold text-white">--°C</span>
+                  <button onclick="adjustClimateTemp('nappali', 0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-l border-slate-800">+</button>
+                </div>
+                <button id="klima-nappali-btn" onclick="toggleClimatePower('nappali')" class="px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-500">OFF</button>
+              </div>
             </div>
 
-            <div class="bg-[#070b12] p-3 lg:p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+            <!-- Háló -->
+            <div class="bg-[#070b12] p-4 rounded-xl border border-slate-800 flex items-center justify-between">
               <div>
                 <span class="font-bold text-slate-200 block text-sm">Háló</span>
-                <span class="text-slate-400 font-mono">Cél: 23°C</span>
+                <span id="klima-halo-current" class="text-slate-400 font-mono">Mért: --°C</span>
               </div>
-              <button class="px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-400">OFF</button>
+              <div class="flex items-center gap-3">
+                <div class="flex items-center bg-[#111622] border border-slate-800 rounded-lg font-mono">
+                  <button onclick="adjustClimateTemp('halo', -0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-r border-slate-800">-</button>
+                  <span id="klima-halo-target" class="px-3 font-bold text-white">--°C</span>
+                  <button onclick="adjustClimateTemp('halo', 0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-l border-slate-800">+</button>
+                </div>
+                <button id="klima-halo-btn" onclick="toggleClimatePower('halo')" class="px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-500">OFF</button>
+              </div>
             </div>
 
-            <div class="bg-[#070b12] p-3 lg:p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+            <!-- Iroda -->
+            <div class="bg-[#070b12] p-4 rounded-xl border border-slate-800 flex items-center justify-between">
               <div>
                 <span class="font-bold text-slate-200 block text-sm">Iroda</span>
-                <span class="text-slate-400 font-mono">Cél: 22°C</span>
+                <span id="klima-iroda-current" class="text-slate-400 font-mono">Mért: --°C</span>
               </div>
-              <button class="px-3 py-1.5 rounded-lg font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ON</button>
+              <div class="flex items-center gap-3">
+                <div class="flex items-center bg-[#111622] border border-slate-800 rounded-lg font-mono">
+                  <button onclick="adjustClimateTemp('iroda', -0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-r border-slate-800">-</button>
+                  <span id="klima-iroda-target" class="px-3 font-bold text-white">--°C</span>
+                  <button onclick="adjustClimateTemp('iroda', 0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-l border-slate-800">+</button>
+                </div>
+                <button id="klima-iroda-btn" onclick="toggleClimatePower('iroda')" class="px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-500">OFF</button>
+              </div>
             </div>
 
-            <div class="bg-[#070b12] p-3 lg:p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+            <!-- Garázs -->
+            <div class="bg-[#070b12] p-4 rounded-xl border border-slate-800 flex items-center justify-between">
               <div>
                 <span class="font-bold text-slate-200 block text-sm">Garázs</span>
-                <span class="text-slate-400 font-mono">Cél: 18°C</span>
+                <span id="klima-garazs-current" class="text-slate-400 font-mono">Mért: --°C</span>
               </div>
-              <button class="px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-400">OFF</button>
+              <div class="flex items-center gap-3">
+                <div class="flex items-center bg-[#111622] border border-slate-800 rounded-lg font-mono">
+                  <button onclick="adjustClimateTemp('garazs', -0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-r border-slate-800">-</button>
+                  <span id="klima-garazs-target" class="px-3 font-bold text-white">--°C</span>
+                  <button onclick="adjustClimateTemp('garazs', 0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-l border-slate-800">+</button>
+                </div>
+                <button id="klima-garazs-btn" onclick="toggleClimatePower('garazs')" class="px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-500">OFF</button>
+              </div>
             </div>
+
           </div>
         </div>
       </section>
@@ -628,78 +660,34 @@
         </div>
       </section>
 
-      <!-- VIEW TAB 7: ESZKÖZÖK -->
-      <section id="view-eszkozok" class="tab-view hidden space-y-4">
-        <div class="bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-6">
-          <h2 class="text-base lg:text-lg font-bold text-white mb-2"><i class="fa-solid fa-border-all text-sky-400 mr-2"></i>Csatlakoztatott Eszközök</h2>
-          <p class="text-xs text-slate-400">Hálózati eszközök és szenzor állapotok</p>
-        </div>
-      </section>
-
-      <!-- VIEW TAB 8: AUTOMATIZÁLÁS -->
-      <section id="view-automatizalas" class="tab-view hidden space-y-4">
-        <div class="bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-6">
-          <h2 class="text-base lg:text-lg font-bold text-white mb-2"><i class="fa-solid fa-sliders text-purple-400 mr-2"></i>Automatizálási Szabályok</h2>
-          <p class="text-xs text-slate-400">Okos energiagazdálkodási logikák</p>
-        </div>
-      </section>
-
-      <!-- VIEW TAB 9: BEÁLLÍTÁSOK -->
-      <section id="view-beallitasok" class="tab-view hidden space-y-4">
-        <div class="bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-6">
-          <h2 class="text-base lg:text-lg font-bold text-white mb-2"><i class="fa-solid fa-gear text-slate-300 mr-2"></i>Rendszer Beállítások</h2>
-          <p class="text-xs text-slate-400 mb-6">Home Assistant API és Hálózati konfiguráció</p>
-          
-          <div class="space-y-4 text-xs max-w-md">
-            <div>
-              <label class="block text-slate-400 font-medium mb-1">HA API Host</label>
-              <input type="text" value="http://192.168.3.168:8123" class="w-full bg-[#070b12] border border-slate-800 rounded-xl p-2.5 text-white font-mono focus:outline-none focus:border-emerald-500">
-            </div>
-            <div>
-              <label class="block text-slate-400 font-medium mb-1">EVCC Host</label>
-              <input type="text" value="http://192.168.3.168:7070" class="w-full bg-[#070b12] border border-slate-800 rounded-xl p-2.5 text-white font-mono focus:outline-none focus:border-emerald-500">
-            </div>
-            <button class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-semibold">Mentés</button>
-          </div>
-        </div>
-      </section>
-
     </main>
   </div>
 
-  <!-- BOTTOM MOBILE NAVIGATION BAR -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-[#0c101a] border-t border-[#1c2436] z-40 flex items-center justify-around p-2 lg:hidden overflow-x-auto">
-    <button data-tab="fooldal" class="mobile-nav-btn active flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0 min-w-[54px]">
+  <!-- BOTTOM MOBILE NAVIGATION BAR (Filtered) -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-[#0c101a] border-t border-[#1c2436] z-40 flex items-center justify-around p-2 lg:hidden">
+    <button data-tab="fooldal" class="mobile-nav-btn active flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0">
       <i class="fa-solid fa-house text-sm mb-0.5"></i>
       <span>Főoldal</span>
     </button>
-    <button data-tab="energia" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0 min-w-[54px]">
+    <button data-tab="energia" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0">
       <i class="fa-solid fa-bolt text-sm mb-0.5"></i>
       <span>Energia</span>
     </button>
-    <button data-tab="auto" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0 min-w-[54px]">
+    <button data-tab="auto" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0">
       <i class="fa-solid fa-car text-sm mb-0.5"></i>
       <span>Autó</span>
     </button>
-    <button data-tab="klima" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0 min-w-[54px]">
+    <button data-tab="klima" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0">
       <i class="fa-solid fa-snowflake text-sm mb-0.5"></i>
       <span>Klíma</span>
     </button>
-    <button data-tab="akkumulator" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0 min-w-[54px]">
+    <button data-tab="akkumulator" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0">
       <i class="fa-solid fa-battery-three-quarters text-sm mb-0.5"></i>
       <span>Akku</span>
     </button>
-    <button data-tab="grafikonok" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0 min-w-[54px]">
+    <button data-tab="grafikonok" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0">
       <i class="fa-solid fa-chart-line text-sm mb-0.5"></i>
       <span>Grafikon</span>
-    </button>
-    <button data-tab="eszkozok" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0 min-w-[54px]">
-      <i class="fa-solid fa-border-all text-sm mb-0.5"></i>
-      <span>Eszközök</span>
-    </button>
-    <button data-tab="beallitasok" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0 min-w-[54px]">
-      <i class="fa-solid fa-gear text-sm mb-0.5"></i>
-      <span>Beállítás</span>
     </button>
   </nav>
 
@@ -776,7 +764,40 @@
       }
     }
 
-    // BUTTON EVENT HANDLERS
+    // CLIMATE CONTROLS LOGIC
+    let climateState = {
+      nappali: { target: 24.0, power: false },
+      halo: { target: 23.0, power: false },
+      iroda: { target: 22.0, power: false },
+      garazs: { target: 18.0, power: false }
+    };
+
+    async function adjustClimateTemp(room, delta) {
+      if (!climateState[room]) return;
+      climateState[room].target = Math.min(30, Math.max(16, climateState[room].target + delta));
+      document.getElementById(`klima-${room}-target`).textContent = `${climateState[room].target.toFixed(1)}°C`;
+      await callHAService('climate', 'set_temperature', {
+        entity_id: `climate.${room}`,
+        temperature: climateState[room].target
+      });
+    }
+
+    async function toggleClimatePower(room) {
+      if (!climateState[room]) return;
+      climateState[room].power = !climateState[room].power;
+      const btn = document.getElementById(`klima-${room}-btn`);
+      if (climateState[room].power) {
+        btn.textContent = 'ON';
+        btn.className = 'px-3 py-1.5 rounded-lg font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+        await callHAService('climate', 'turn_on', { entity_id: `climate.${room}` });
+      } else {
+        btn.textContent = 'OFF';
+        btn.className = 'px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-500';
+        await callHAService('climate', 'turn_off', { entity_id: `climate.${room}` });
+      }
+    }
+
+    // EV CHARGER BUTTON EVENT HANDLERS
     const slider = document.getElementById('target-soc-slider');
     slider.addEventListener('input', (e) => {
       const amps = e.target.value;
@@ -799,7 +820,38 @@
       await callHAService('shell_command', 'stop_ev_charge');
     });
 
-    function kwh(v) { return (v === undefined || v === "" || v === null) ? "-- kWh" : Number(v).toFixed(1) + " kWh"; }
+    // Fetch Slovakia (SK) Spot Prices from Energy-Charts API in EUR/kWh
+    async function fetchSpotPrices() {
+      try {
+        const res = await fetch('https://api.energy-charts.info/price?bzn=SK');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.price && data.price.length) {
+            const currentHour = new Date().getHours();
+            const eurMWh = data.price[currentHour] || data.price[0];
+            const eurKWh = eurMWh / 1000;
+            document.getElementById('spot-price-current').textContent = `${eurKWh.toFixed(3)} EUR/kWh`;
+
+            const svgPath = document.getElementById('price-path');
+            const svgArea = document.getElementById('price-area');
+            const prices = data.price.slice(0, 24);
+            const minP = Math.min(...prices);
+            const maxP = Math.max(...prices);
+
+            const points = prices.map((val, idx) => {
+              const x = (idx / (prices.length - 1)) * 300;
+              const y = 70 - ((val - minP) / (maxP - minP || 1)) * 55;
+              return `${x.toFixed(1)},${y.toFixed(1)}`;
+            });
+
+            const dLine = 'M ' + points.join(' L ');
+            svgPath.setAttribute('d', dLine);
+            svgArea.setAttribute('d', dLine + ' L 300,80 L 0,80 Z');
+          }
+        }
+      } catch (e) {}
+    }
+    fetchSpotPrices();
 
     // Fetch Telemetry from /local/energia/data_v3.json
     async function loadData() {
@@ -837,6 +889,21 @@
           document.getElementById("stat-car-power").textContent = cKw;
           document.getElementById("flow-car-power").textContent = cKw + " kW";
           document.getElementById("car-power-label").textContent = cKw + " kW";
+        }
+
+        // Climate Readings from JSON if provided
+        if (d.climates) {
+          ['nappali', 'halo', 'iroda', 'garazs'].forEach(room => {
+            if (d.climates[room]) {
+              if (d.climates[room].temp !== undefined) {
+                document.getElementById(`klima-${room}-current`).textContent = `Mért: ${d.climates[room].temp}°C`;
+              }
+              if (d.climates[room].target !== undefined) {
+                climateState[room].target = d.climates[room].target;
+                document.getElementById(`klima-${room}-target`).textContent = `${d.climates[room].target}°C`;
+              }
+            }
+          });
         }
 
       } catch (e) {
