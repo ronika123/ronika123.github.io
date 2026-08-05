@@ -14,16 +14,12 @@
         extend: {
           colors: {
             brand: {
-              bg: '#070b12',
-              sidebar: '#0c101a',
-              card: '#111622',
-              border: '#1c2436',
               accent: '#10b981',
-              solar: '#f59e0b',
-              house: '#38bdf8',
+              solar: '#d97706',
+              house: '#0284c7',
               battery: '#10b981',
-              car: '#3b82f6',
-              grid: '#f97316'
+              car: '#2563eb',
+              grid: '#475569'
             }
           }
         }
@@ -32,17 +28,52 @@
   </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
+    /* CSS Variables for Executive Light / Dark Theme */
+    :root {
+      --bg-main: #f8fafc;
+      --bg-sidebar: #ffffff;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --node-bg: #f1f5f9;
+      --svg-flow-color: #64748b;
+    }
+
+    .dark {
+      --bg-main: #0b0f19;
+      --bg-sidebar: #111726;
+      --bg-card: #151c2e;
+      --border-color: #1e293b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --node-bg: #0b0f19;
+      --svg-flow-color: #475569;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .theme-sidebar { background-color: var(--bg-sidebar); border-color: var(--border-color); }
+    .theme-card { background-color: var(--bg-card); border-color: var(--border-color); }
+    .theme-node { background-color: var(--node-bg); border-color: var(--border-color); }
+    .theme-text-muted { color: var(--text-muted); }
+
     @keyframes flowLine {
       to { stroke-dashoffset: -20; }
     }
     .animated-flow {
       stroke-dasharray: 6 6;
-      animation: flowLine 1s linear infinite;
+      animation: flowLine 1.2s linear infinite;
     }
+
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #070b12; }
-    ::-webkit-scrollbar-thumb { background: #1c2436; border-radius: 3px; }
-    
+    ::-webkit-scrollbar-track { background: var(--bg-main); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
     model-viewer {
       width: 100%;
       height: 100%;
@@ -50,71 +81,103 @@
     }
 
     .nav-btn.active, .mobile-nav-btn.active {
-      background-color: #163a23;
-      color: #34d399;
-      border-color: rgba(16, 185, 129, 0.3);
+      background-color: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      border-color: rgba(16, 185, 129, 0.25);
+      font-weight: 600;
+    }
+
+    /* Pop/Scale animation for icons and elements when theme transitions */
+    @keyframes elementPop {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.18); }
+      75% { transform: scale(0.95); }
+      100% { transform: scale(1); }
+    }
+
+    .pop-animate {
+      animation: elementPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    /* View Transitions Circular Reveal API overrides */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+      mix-blend-mode: normal;
+    }
+
+    ::view-transition-old(root) {
+      z-index: 1;
+    }
+
+    ::view-transition-new(root) {
+      z-index: 9999;
     }
   </style>
 </head>
-<body class="bg-[#070b12] text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-emerald-500/30">
+<body class="font-sans min-h-screen flex flex-col antialiased selection:bg-emerald-500/20">
 
   <div class="flex flex-1 min-h-screen overflow-hidden pb-16 lg:pb-0">
     
-    <!-- LEFT SIDEBAR (DESKTOP ONLY) -->
-    <aside class="w-60 bg-[#0c101a] border-r border-[#1c2436] flex-col justify-between p-4 shrink-0 hidden lg:flex">
+    <!-- LEFT SIDEBAR -->
+    <aside class="w-60 theme-sidebar border-r flex-col justify-between p-4 shrink-0 hidden lg:flex transition-colors">
       <div>
-        <!-- Logo -->
+        <!-- Logo Area -->
         <div class="flex items-center gap-3 px-2 py-3 mb-5">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-900/40 border border-emerald-400/30">
-            <i class="fa-solid fa-snake text-white text-lg"></i>
+          <div class="w-10 h-10 rounded-xl bg-slate-800 text-emerald-400 border border-slate-700/80 flex items-center justify-center shadow-sm overflow-hidden p-1 icon-pop">
+            <img id="cobra-logo-img" src="cobra.jpg" alt="COBRA Logo" 
+              onerror="if (this.getAttribute('data-tried') !== 'png') { this.setAttribute('data-tried', 'png'); this.src='cobra.png'; } else { this.style.display='none'; document.getElementById('cobra-svg-fallback').classList.remove('hidden'); }" 
+              class="w-full h-full object-contain" />
+            
+            <i id="cobra-svg-fallback" class="fa-solid fa-snake text-base hidden"></i>
           </div>
           <div>
-            <h1 class="font-extrabold text-lg tracking-wider text-white leading-none">COBRA</h1>
-            <p class="text-[10px] text-emerald-400 font-semibold tracking-widest uppercase mt-0.5">SMART HOME</p>
+            <h1 class="font-bold text-base tracking-wider leading-none">COBRA</h1>
+            <p class="text-[9px] text-emerald-500 font-medium tracking-widest uppercase mt-0.5">SMART HOME</p>
           </div>
         </div>
 
-        <!-- Desktop Navigation Menu (Filtered: Removed Beállítások, Eszközök, Automatizálás) -->
+        <!-- Navigation Menu -->
         <nav class="space-y-1">
-          <button data-tab="fooldal" class="nav-btn active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent transition text-left">
-            <i class="fa-solid fa-house w-4 text-center"></i>
+          <button data-tab="fooldal" class="nav-btn active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs theme-text-muted hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-transparent transition text-left">
+            <i class="fa-solid fa-house w-4 text-center icon-pop"></i>
             <span>Főoldal</span>
           </button>
-          <button data-tab="energia" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent transition text-left">
-            <i class="fa-solid fa-bolt w-4 text-center"></i>
+          <button data-tab="energia" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs theme-text-muted hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-transparent transition text-left">
+            <i class="fa-solid fa-bolt w-4 text-center icon-pop"></i>
             <span>Energia</span>
           </button>
-          <button data-tab="auto" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent transition text-left">
-            <i class="fa-solid fa-car w-4 text-center"></i>
+          <button data-tab="auto" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs theme-text-muted hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-transparent transition text-left">
+            <i class="fa-solid fa-car w-4 text-center icon-pop"></i>
             <span>Autó / Töltés</span>
           </button>
-          <button data-tab="klima" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent transition text-left">
-            <i class="fa-solid fa-snowflake w-4 text-center"></i>
+          <button data-tab="klima" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs theme-text-muted hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-transparent transition text-left">
+            <i class="fa-solid fa-snowflake w-4 text-center icon-pop"></i>
             <span>Klíma</span>
           </button>
-          <button data-tab="akkumulator" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent transition text-left">
-            <i class="fa-solid fa-battery-three-quarters w-4 text-center"></i>
+          <button data-tab="akkumulator" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs theme-text-muted hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-transparent transition text-left">
+            <i class="fa-solid fa-battery-three-quarters w-4 text-center icon-pop"></i>
             <span>Akkumulátor</span>
           </button>
-          <button data-tab="grafikonok" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent transition text-left">
-            <i class="fa-solid fa-chart-line w-4 text-center"></i>
+          <button data-tab="grafikonok" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs theme-text-muted hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-transparent transition text-left">
+            <i class="fa-solid fa-chart-line w-4 text-center icon-pop"></i>
             <span>Grafikonok</span>
           </button>
         </nav>
       </div>
 
       <!-- System Status Footer -->
-      <div class="bg-[#111622] rounded-xl p-3 border border-[#1c2436]">
-        <div class="text-[11px] font-medium text-slate-400 mb-1">Rendszer állapot</div>
+      <div class="theme-card rounded-xl p-3 border">
+        <div class="text-[10px] uppercase tracking-wider font-semibold theme-text-muted mb-1">Rendszer állapot</div>
         <div class="flex items-center gap-2 mb-2">
-          <span id="status-indicator-ping" class="relative flex h-2.5 w-2.5 hidden">
+          <span id="status-indicator-ping" class="relative flex h-2 w-2 hidden">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span id="status-indicator-offline" class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
-          <span id="system-status-text" class="text-xs font-semibold text-slate-400">Nincs kapcsolat</span>
+          <span id="status-indicator-offline" class="w-2 h-2 rounded-full bg-slate-500"></span>
+          <span id="system-status-text" class="text-xs font-medium theme-text-muted">Nincs kapcsolat</span>
         </div>
-        <div class="flex items-center justify-between text-[10px] text-slate-500 pt-1.5 border-t border-slate-800">
+        <div class="flex items-center justify-between text-[10px] theme-text-muted pt-1.5 border-t border-slate-200 dark:border-slate-800">
           <span>Frissítve:</span>
           <span id="system-time-update" class="font-mono">--:--:--</span>
         </div>
@@ -122,201 +185,208 @@
     </aside>
 
     <!-- MAIN DASHBOARD CONTENT -->
-    <main class="flex-1 overflow-y-auto p-3 lg:p-5 space-y-4 bg-[#070b12] w-full">
+    <main class="flex-1 overflow-y-auto p-3 lg:p-5 space-y-4 w-full">
 
       <!-- HEADER TOP BAR -->
       <header class="flex flex-col gap-3">
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2 lg:hidden">
-            <div class="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center text-white text-xs">
-              <i class="fa-solid fa-snake"></i>
+          <div class="flex items-center gap-2.5 lg:hidden">
+            <div class="w-7 h-7 rounded-lg bg-slate-800 text-emerald-400 flex items-center justify-center text-xs overflow-hidden p-0.5 border border-slate-700 icon-pop">
+              <img id="cobra-logo-img-mobile" src="cobra.jpg" alt="COBRA Logo" 
+                onerror="if (this.getAttribute('data-tried') !== 'png') { this.setAttribute('data-tried', 'png'); this.src='cobra.png'; } else { this.style.display='none'; document.getElementById('cobra-svg-fallback-mobile').classList.remove('hidden'); }" 
+                class="w-full h-full object-contain" />
+              <i id="cobra-svg-fallback-mobile" class="fa-solid fa-snake text-xs hidden"></i>
             </div>
-            <span class="font-bold text-white text-sm">COBRA</span>
+            <span class="font-bold text-sm tracking-wider">COBRA</span>
           </div>
 
           <div class="flex items-center gap-4 lg:gap-6">
-            <div class="flex items-center gap-2 text-slate-300">
-              <i class="fa-solid fa-sun text-amber-400 text-base lg:text-lg"></i>
-              <span id="weather-temp" class="text-sm lg:text-base font-semibold font-mono">--°C</span>
+            <div class="flex items-center gap-2 theme-text-muted">
+              <i class="fa-solid fa-sun text-amber-500/90 text-sm lg:text-base icon-pop"></i>
+              <span id="weather-temp" class="text-xs lg:text-sm font-medium font-mono">--°C</span>
             </div>
             <div>
-              <div id="live-clock" class="text-xl lg:text-2xl font-bold tracking-tight text-white font-mono leading-none">--:--</div>
-              <div id="live-date" class="text-[10px] lg:text-xs text-slate-400 mt-0.5">--</div>
+              <div id="live-clock" class="text-xl lg:text-2xl font-bold tracking-tight font-mono leading-none">--:--</div>
+              <div id="live-date" class="text-[10px] lg:text-xs theme-text-muted mt-0.5">--</div>
             </div>
           </div>
+
+          <!-- Light / Dark Mode Toggle Button -->
+          <button id="theme-toggle-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium theme-card border theme-text-muted hover:text-slate-200 transition">
+            <i id="theme-icon" class="fa-solid fa-moon icon-pop"></i>
+            <span id="theme-label" class="hidden sm:inline">Sötét mód</span>
+          </button>
         </div>
 
         <!-- TOP STAT CARDS -->
         <div class="grid grid-cols-2 lg:grid-cols-5 gap-2.5 lg:gap-3">
-          <div class="bg-[#111622] border border-[#1c2436] rounded-2xl p-3 lg:p-3.5 flex items-center justify-between">
+          <div class="theme-card border rounded-2xl p-3 lg:p-3.5 flex items-center justify-between">
             <div>
-              <div class="text-[11px] lg:text-xs text-slate-400 font-medium">Napelem</div>
-              <div class="text-lg lg:text-xl font-bold text-amber-400 font-mono mt-0.5"><span id="stat-solar">--</span> <span class="text-xs text-slate-400">kW</span></div>
+              <div class="text-[11px] lg:text-xs theme-text-muted font-medium">Napelem</div>
+              <div class="text-lg lg:text-xl font-bold text-amber-500 font-mono mt-0.5"><span id="stat-solar">--</span> <span class="text-xs font-normal theme-text-muted">kW</span></div>
             </div>
-            <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400"><i class="fa-solid fa-solar-panel text-sm"></i></div>
+            <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center icon-pop"><i class="fa-solid fa-solar-panel text-xs"></i></div>
           </div>
 
-          <div class="bg-[#111622] border border-[#1c2436] rounded-2xl p-3 lg:p-3.5 flex items-center justify-between">
+          <div class="theme-card border rounded-2xl p-3 lg:p-3.5 flex items-center justify-between">
             <div>
-              <div class="text-[11px] lg:text-xs text-slate-400 font-medium">Ház fogyasztás</div>
-              <div class="text-lg lg:text-xl font-bold text-sky-400 font-mono mt-0.5"><span id="stat-house">--</span> <span class="text-xs text-slate-400">kW</span></div>
+              <div class="text-[11px] lg:text-xs theme-text-muted font-medium">Ház fogyasztás</div>
+              <div class="text-lg lg:text-xl font-bold text-sky-500 font-mono mt-0.5"><span id="stat-house">--</span> <span class="text-xs font-normal theme-text-muted">kW</span></div>
             </div>
-            <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400"><i class="fa-solid fa-house text-sm"></i></div>
+            <div class="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-500 flex items-center justify-center icon-pop"><i class="fa-solid fa-house text-xs"></i></div>
           </div>
 
-          <div id="stat-battery-box" class="bg-[#111622] border border-[#1c2436] rounded-2xl p-3 lg:p-3.5 flex items-center justify-between">
+          <div id="stat-battery-box" class="theme-card border rounded-2xl p-3 lg:p-3.5 flex items-center justify-between">
             <div>
-              <div class="text-[11px] lg:text-xs text-slate-400 font-medium">Akkumulátor</div>
-              <div class="text-lg lg:text-xl font-bold text-emerald-400 font-mono mt-0.5"><span id="stat-battery-percent">--</span><span class="text-xs">%</span></div>
-              <div id="stat-battery-power" class="text-[10px] text-emerald-400/90 font-mono">-- kW</div>
+              <div class="text-[11px] lg:text-xs theme-text-muted font-medium">Akkumulátor</div>
+              <div class="text-lg lg:text-xl font-bold text-emerald-500 font-mono mt-0.5"><span id="stat-battery-percent">--</span><span class="text-xs">%</span></div>
+              <div id="stat-battery-power" class="text-[10px] text-emerald-500 font-mono">-- kW</div>
             </div>
-            <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-battery-full text-sm"></i></div>
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center icon-pop"><i class="fa-solid fa-battery-full text-xs"></i></div>
           </div>
 
-          <div id="stat-grid-box" class="bg-[#111622] border border-[#1c2436] rounded-2xl p-3 lg:p-3.5 flex items-center justify-between">
+          <div id="stat-grid-box" class="theme-card border rounded-2xl p-3 lg:p-3.5 flex items-center justify-between">
             <div>
-              <div class="text-[11px] lg:text-xs text-slate-400 font-medium">Hálózat</div>
-              <div class="text-lg lg:text-xl font-bold text-amber-500 font-mono mt-0.5"><span id="stat-grid">--</span> <span class="text-xs text-slate-400">W</span></div>
+              <div class="text-[11px] lg:text-xs theme-text-muted font-medium">Hálózat</div>
+              <div class="text-lg lg:text-xl font-bold text-slate-400 font-mono mt-0.5"><span id="stat-grid">--</span> <span class="text-xs font-normal theme-text-muted">W</span></div>
             </div>
-            <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500"><i class="fa-solid fa-tower-cell text-sm"></i></div>
+            <div class="w-8 h-8 rounded-lg bg-slate-500/10 text-slate-400 flex items-center justify-center icon-pop"><i class="fa-solid fa-tower-cell text-xs"></i></div>
           </div>
 
-          <div id="stat-car-box" class="bg-[#111622] border border-[#1c2436] rounded-2xl p-3 lg:p-3.5 flex items-center justify-between col-span-2 lg:col-span-1">
+          <div id="stat-car-box" class="theme-card border rounded-2xl p-3 lg:p-3.5 flex items-center justify-between col-span-2 lg:col-span-1">
             <div>
-              <div class="text-[11px] lg:text-xs text-slate-400 font-medium">BMW i7</div>
-              <div class="text-lg lg:text-xl font-bold text-slate-200 font-mono mt-0.5"><span id="stat-car-power">--</span> <span class="text-xs text-slate-400">kW</span></div>
-              <div class="text-[10px] text-slate-400 font-mono"><span id="stat-car-soc">--</span>% - <span id="stat-car-range">--</span> km</div>
+              <div class="text-[11px] lg:text-xs theme-text-muted font-medium">BMW i7</div>
+              <div class="text-lg lg:text-xl font-bold text-blue-500 font-mono mt-0.5"><span id="stat-car-power">--</span> <span class="text-xs font-normal theme-text-muted">kW</span></div>
+              <div class="text-[10px] theme-text-muted font-mono"><span id="stat-car-soc">--</span>% - <span id="stat-car-range">--</span> km</div>
             </div>
-            <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400"><i class="fa-solid fa-car-side text-sm"></i></div>
+            <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center icon-pop"><i class="fa-solid fa-car-side text-xs"></i></div>
           </div>
         </div>
       </header>
 
-      <!-- VIEW TAB 1: FŐOLDAL (DEFAULT) -->
+      <!-- VIEW TAB 1: FŐOLDAL -->
       <section id="view-fooldal" class="tab-view space-y-4">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
           
           <!-- ROW 1 LEFT: Energiaáramlás -->
-          <div class="lg:col-span-8 bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-5 flex flex-col justify-between min-h-[340px] lg:min-h-[360px]">
-            <div class="text-sm font-semibold text-slate-200">Energiaáramlás</div>
+          <div class="lg:col-span-8 theme-card border rounded-2xl p-4 lg:p-5 flex flex-col justify-between min-h-[340px] lg:min-h-[360px]">
+            <div class="text-xs uppercase tracking-wider font-semibold theme-text-muted">Energiaáramlás</div>
 
             <div class="relative my-auto py-2">
               <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 500 220" fill="none">
-                <line x1="250" y1="40" x2="250" y2="85" stroke="#f59e0b" stroke-width="2.5" class="animated-flow" />
-                <line x1="220" y1="110" x2="130" y2="110" stroke="#f97316" stroke-width="2.5" class="animated-flow" />
-                <line x1="280" y1="110" x2="370" y2="110" stroke="#38bdf8" stroke-width="2.5" class="animated-flow" />
-                <path d="M 235 130 L 235 150 L 165 175" stroke="#10b981" stroke-width="2.5" class="animated-flow" />
-                <path d="M 265 130 L 265 150 L 335 175" stroke="#3b82f6" stroke-width="2.5" />
+                <line x1="250" y1="40" x2="250" y2="85" stroke="#d97706" stroke-width="2" class="animated-flow" />
+                <line x1="220" y1="110" x2="130" y2="110" stroke="#64748b" stroke-width="2" class="animated-flow" />
+                <line x1="280" y1="110" x2="370" y2="110" stroke="#0284c7" stroke-width="2" class="animated-flow" />
+                <path d="M 235 130 L 235 150 L 165 175" stroke="#10b981" stroke-width="2" class="animated-flow" />
+                <path d="M 265 130 L 265 150 L 335 175" stroke="#2563eb" stroke-width="2" />
               </svg>
 
               <div class="relative z-10 flex flex-col items-center gap-5">
                 <div class="flex flex-col items-center">
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 mb-1">NAPELEM</span>
-                  <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-[#070b12] border-2 border-amber-400 flex items-center justify-center shadow-lg shadow-amber-500/20">
-                    <i class="fa-solid fa-solar-panel text-amber-400 text-base lg:text-lg"></i>
+                  <span class="text-[9px] font-semibold uppercase tracking-wider text-amber-500 mb-1">NAPELEM</span>
+                  <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full theme-node border flex items-center justify-center icon-pop">
+                    <i class="fa-solid fa-solar-panel text-amber-500 text-sm lg:text-base"></i>
                   </div>
-                  <span id="flow-solar" class="text-xs font-bold text-amber-400 mt-1 font-mono">-- kW</span>
+                  <span id="flow-solar" class="text-xs font-bold text-amber-500 mt-1 font-mono">-- kW</span>
                 </div>
 
                 <div class="w-full flex items-center justify-around px-1 lg:px-4">
                   <div class="flex flex-col items-center">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-amber-500 mb-1">HÁLÓZAT</span>
-                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-[#070b12] border-2 border-amber-500 flex items-center justify-center shadow-lg">
-                      <i class="fa-solid fa-tower-cell text-amber-500 text-sm lg:text-base"></i>
+                    <span class="text-[9px] font-semibold uppercase tracking-wider text-slate-400 mb-1">HÁLÓZAT</span>
+                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full theme-node border flex items-center justify-center icon-pop">
+                      <i class="fa-solid fa-tower-cell text-slate-400 text-xs lg:text-sm"></i>
                     </div>
-                    <span id="flow-grid" class="text-xs font-bold text-amber-500 mt-1 font-mono">-- W</span>
+                    <span id="flow-grid" class="text-xs font-bold text-slate-400 mt-1 font-mono">-- W</span>
                   </div>
 
                   <div class="flex flex-col items-center">
-                    <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">INVERTER / DEYE</span>
-                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-2xl bg-[#070b12] border-2 border-slate-700 flex items-center justify-center shadow-xl">
-                      <i class="fa-solid fa-microchip text-slate-300 text-base lg:text-lg"></i>
+                    <span class="text-[8px] font-semibold uppercase tracking-wider theme-text-muted mb-1">INVERTER / DEYE</span>
+                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-xl theme-node border flex items-center justify-center icon-pop">
+                      <i class="fa-solid fa-microchip text-slate-400 text-sm lg:text-base"></i>
                     </div>
                   </div>
 
                   <div class="flex flex-col items-center">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-sky-400 mb-1">HÁZ</span>
-                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-[#070b12] border-2 border-sky-400 flex items-center justify-center shadow-lg">
-                      <i class="fa-solid fa-house text-sky-400 text-sm lg:text-base"></i>
+                    <span class="text-[9px] font-semibold uppercase tracking-wider text-sky-500 mb-1">HÁZ</span>
+                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full theme-node border flex items-center justify-center icon-pop">
+                      <i class="fa-solid fa-house text-sky-500 text-xs lg:text-sm"></i>
                     </div>
-                    <span id="flow-house" class="text-xs font-bold text-sky-400 mt-1 font-mono">-- kW</span>
+                    <span id="flow-house" class="text-xs font-bold text-sky-500 mt-1 font-mono">-- kW</span>
                   </div>
                 </div>
 
                 <div class="w-full flex items-center justify-center gap-10 lg:gap-16">
                   <div class="flex flex-col items-center">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-1">AKKUMULÁTOR</span>
-                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-[#070b12] border-2 border-emerald-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                      <i class="fa-solid fa-battery-three-quarters text-emerald-400 text-base lg:text-lg"></i>
+                    <span class="text-[9px] font-semibold uppercase tracking-wider text-emerald-500 mb-1">AKKUMULÁTOR</span>
+                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full theme-node border flex items-center justify-center icon-pop">
+                      <i class="fa-solid fa-battery-three-quarters text-emerald-500 text-sm lg:text-base"></i>
                     </div>
                     <div class="text-center mt-1">
-                      <div id="flow-battery-soc" class="text-xs font-bold text-emerald-400 font-mono">--%</div>
-                      <div id="flow-battery-power" class="text-[10px] text-emerald-400/90 font-mono">-- kW</div>
+                      <div id="flow-battery-soc" class="text-xs font-bold text-emerald-500 font-mono">--%</div>
+                      <div id="flow-battery-power" class="text-[10px] text-emerald-500 font-mono">-- kW</div>
                     </div>
                   </div>
 
                   <div class="flex flex-col items-center">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-400 mb-1">BMW i7</span>
-                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-[#070b12] border-2 border-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                      <i class="fa-solid fa-car text-blue-400 text-base lg:text-lg"></i>
+                    <span class="text-[9px] font-semibold uppercase tracking-wider text-blue-500 mb-1">BMW i7</span>
+                    <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full theme-node border flex items-center justify-center icon-pop">
+                      <i class="fa-solid fa-car text-blue-500 text-sm lg:text-base"></i>
                     </div>
-                    <span id="flow-car-power" class="text-xs font-bold text-blue-400 mt-1 font-mono">-- kW</span>
+                    <span id="flow-car-power" class="text-xs font-bold text-blue-500 mt-1 font-mono">-- kW</span>
                   </div>
                 </div>
 
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-800 text-center">
+            <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-200 dark:border-slate-800/80 text-center">
               <div>
-                <div class="text-[10px] lg:text-[11px] text-slate-400">Termelés (ma)</div>
-                <div id="flow-solar-today" class="text-xs lg:text-sm font-bold text-emerald-400 font-mono">-- kWh</div>
+                <div class="text-[10px] theme-text-muted">Termelés (ma)</div>
+                <div id="flow-solar-today" class="text-xs lg:text-sm font-bold text-emerald-500 font-mono">-- kWh</div>
               </div>
               <div>
-                <div class="text-[10px] lg:text-[11px] text-slate-400">Fogyasztás (ma)</div>
-                <div id="flow-house-today" class="text-xs lg:text-sm font-bold text-sky-400 font-mono">-- kWh</div>
+                <div class="text-[10px] theme-text-muted">Fogyasztás (ma)</div>
+                <div id="flow-house-today" class="text-xs lg:text-sm font-bold text-sky-500 font-mono">-- kWh</div>
               </div>
               <div>
-                <div class="text-[10px] lg:text-[11px] text-slate-400">Önellátás</div>
-                <div id="flow-self-sufficiency" class="text-xs lg:text-sm font-bold text-emerald-400 font-mono">--%</div>
+                <div class="text-[10px] theme-text-muted">Önellátás</div>
+                <div id="flow-self-sufficiency" class="text-xs lg:text-sm font-bold text-emerald-500 font-mono">--%</div>
               </div>
             </div>
           </div>
 
-          <!-- ROW 1 RIGHT: BMW i7 Card & 3D Interactive Model Viewer -->
-          <div class="lg:col-span-4 bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-5 flex flex-col justify-between">
+          <!-- ROW 1 RIGHT: BMW i7 Card -->
+          <div class="lg:col-span-4 theme-card border rounded-2xl p-4 lg:p-5 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-semibold text-slate-200">BMW i7</span>
-                <span class="text-[10px] text-slate-400 font-mono"><i class="fa-solid fa-hand-pointer text-emerald-400 mr-1"></i>3D Forgatható</span>
+                <span class="text-xs uppercase tracking-wider font-semibold theme-text-muted">BMW i7</span>
+                <span class="text-[10px] theme-text-muted font-mono"><i class="fa-solid fa-rotate text-slate-400 mr-1 icon-pop"></i>3D Forgatható</span>
               </div>
 
-              <!-- INTERACTIVE 3D MODEL CONTAINER -->
+              <!-- 3D MODEL CONTAINER -->
               <div class="relative py-1 flex items-center justify-center">
-                <div class="w-full h-36 lg:h-40 bg-[#070b12] rounded-xl border border-slate-800 flex items-center justify-center overflow-hidden relative p-1">
-                  <div class="absolute inset-0 bg-gradient-to-t from-blue-950/20 to-transparent pointer-events-none z-10"></div>
-
+                <div class="w-full h-36 lg:h-40 theme-node rounded-xl border flex items-center justify-center overflow-hidden relative p-1">
                   <model-viewer id="bmw-3d-model" 
                     src="bmw.glb" 
                     alt="BMW i7 3D Model" 
                     camera-controls 
                     auto-rotate 
-                    rotation-per-second="10deg"
-                    shadow-intensity="1" 
+                    rotation-per-second="8deg"
+                    shadow-intensity="0.4" 
                     environment-image="neutral"
-                    exposure="1.2"
+                    exposure="1.0"
                     interaction-prompt="none"
                     class="relative z-0 cursor-grab active:cursor-grabbing">
                     
                     <div slot="poster" class="w-full h-full flex items-center justify-center">
                       <img id="bmw-image" src="bmw.jpg" alt="BMW i7" 
                         onerror="if (this.getAttribute('data-tried') !== 'png') { this.setAttribute('data-tried', 'png'); this.src='bmw.png'; } else { this.style.display='none'; document.getElementById('bmw-svg-fallback').classList.remove('hidden'); }" 
-                        class="max-h-full max-w-full object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.9)]" />
+                        class="max-h-full max-w-full object-contain opacity-90" />
                       
-                      <svg id="bmw-svg-fallback" class="w-44 text-slate-200 drop-shadow-[0_8px_16px_rgba(0,0,0,0.9)] hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <svg id="bmw-svg-fallback" class="w-40 text-slate-500 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
                         <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H7c-.7 0-1.3.3-1.8.7C4.3 8.6 3 10 3 10s-2.7.6-4.5 1.1C-2.3 11.3-3 12.1-3 13v3c0 .6.4 1 1 1h2" transform="translate(4, 2)"/>
-                        <circle cx="7" cy="17" r="2" fill="#070b12"/>
-                        <circle cx="17" cy="17" r="2" fill="#070b12"/>
+                        <circle cx="7" cy="17" r="2" fill="currentColor"/>
+                        <circle cx="17" cy="17" r="2" fill="currentColor"/>
                       </svg>
                     </div>
                   </model-viewer>
@@ -325,84 +395,84 @@
 
               <div class="flex items-baseline justify-between mt-2">
                 <div class="flex items-baseline gap-1">
-                  <span id="car-soc-percent" class="text-2xl lg:text-3xl font-extrabold text-white font-mono">--%</span>
+                  <span id="car-soc-percent" class="text-2xl lg:text-3xl font-bold font-mono">--%</span>
                 </div>
-                <div class="text-base lg:text-lg font-bold text-slate-200 font-mono">
-                  <span id="car-range-km">--</span> <span class="text-xs font-normal text-slate-400">km</span>
+                <div class="text-base lg:text-lg font-bold font-mono">
+                  <span id="car-range-km">--</span> <span class="text-xs font-normal theme-text-muted">km</span>
                 </div>
               </div>
 
-              <div class="w-full bg-slate-800 rounded-full h-2 my-2.5">
-                <div id="car-soc-bar" class="bg-emerald-500 h-2 rounded-full w-0 transition-all duration-500"></div>
+              <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 my-2.5">
+                <div id="car-soc-bar" class="bg-emerald-500 h-1.5 rounded-full w-0 transition-all duration-500"></div>
               </div>
 
               <div class="grid grid-cols-3 gap-2 my-3">
-                <div class="bg-[#070b12] border border-slate-800 rounded-xl p-2 text-center">
-                  <div id="car-doors-status" class="flex items-center justify-center gap-1 text-[11px] font-bold text-slate-400">
-                    <i class="fa-solid fa-lock text-slate-400 text-xs"></i> --
+                <div class="theme-node border rounded-xl p-2 text-center">
+                  <div id="car-doors-status" class="flex items-center justify-center gap-1 text-[11px] font-semibold theme-text-muted">
+                    <i class="fa-solid fa-lock text-xs icon-pop"></i> --
                   </div>
-                  <div class="text-[10px] text-slate-500 mt-0.5">Ajtók</div>
+                  <div class="text-[9px] theme-text-muted uppercase tracking-wider mt-0.5">Ajtók</div>
                 </div>
-                <div class="bg-[#070b12] border border-slate-800 rounded-xl p-2 text-center">
-                  <div id="car-climate-status" class="flex items-center justify-center gap-1 text-[11px] font-bold text-slate-400">
-                    <i class="fa-solid fa-power-off text-slate-500 text-xs"></i> --
+                <div class="theme-node border rounded-xl p-2 text-center">
+                  <div id="car-climate-status" class="flex items-center justify-center gap-1 text-[11px] font-semibold theme-text-muted">
+                    <i class="fa-solid fa-power-off text-xs icon-pop"></i> --
                   </div>
-                  <div class="text-[10px] text-slate-500 mt-0.5">Klíma</div>
+                  <div class="text-[9px] theme-text-muted uppercase tracking-wider mt-0.5">Klíma</div>
                 </div>
-                <div class="bg-[#070b12] border border-slate-800 rounded-xl p-2 text-center">
-                  <div id="car-health-status" class="flex items-center justify-center gap-1 text-[11px] font-bold text-slate-400">
-                    <i class="fa-solid fa-circle-check text-xs"></i> --
+                <div class="theme-node border rounded-xl p-2 text-center">
+                  <div id="car-health-status" class="flex items-center justify-center gap-1 text-[11px] font-semibold theme-text-muted">
+                    <i class="fa-solid fa-circle-check text-xs icon-pop"></i> --
                   </div>
-                  <div class="text-[10px] text-slate-500 mt-0.5">Státusz</div>
+                  <div class="text-[9px] theme-text-muted uppercase tracking-wider mt-0.5">Státusz</div>
                 </div>
               </div>
 
               <!-- Charge Controls -->
-              <div class="mt-3 pt-2.5 border-t border-slate-800">
+              <div class="mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-800/80">
                 <div class="flex items-center justify-between text-xs mb-2">
-                  <span class="text-slate-400 font-medium">Töltésvezérlés</span>
-                  <span id="car-power-label" class="font-mono font-bold text-slate-200">-- kW</span>
+                  <span class="theme-text-muted font-medium">Töltésvezérlés</span>
+                  <span id="car-power-label" class="font-mono font-bold">-- kW</span>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2 mb-2.5">
-                  <button id="btn-start-charge" class="py-1.5 rounded-xl text-xs font-semibold bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/40 transition">
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                  <button id="btn-start-charge" class="py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">
                     Töltés indítás
                   </button>
-                  <button id="btn-stop-charge" class="py-1.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+                  <button id="btn-stop-charge" class="py-1.5 rounded-lg text-xs font-semibold theme-node theme-text-muted border hover:bg-slate-200 dark:hover:bg-slate-800 transition">
                     Töltés stop
                   </button>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2 mb-2">
-                  <button id="btn-solar-mode" class="py-1.5 rounded-lg text-xs font-medium bg-[#070b12] text-slate-400 hover:bg-slate-800 flex items-center justify-center gap-1 transition">
-                    <i class="fa-solid fa-sun text-amber-400"></i> Solar mód
+                  <button id="btn-solar-mode" class="py-1.5 rounded-lg text-xs font-medium theme-node theme-text-muted border hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center gap-1 transition">
+                    <i class="fa-solid fa-sun text-amber-500 icon-pop"></i> Solar mód
                   </button>
-                  <button id="btn-max-mode" class="py-1.5 rounded-lg text-xs font-medium bg-[#070b12] text-slate-400 hover:bg-slate-800 flex items-center justify-center gap-1 transition">
-                    <i class="fa-solid fa-bolt text-blue-400"></i> Max mód
+                  <button id="btn-max-mode" class="py-1.5 rounded-lg text-xs font-medium theme-node theme-text-muted border hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center gap-1 transition">
+                    <i class="fa-solid fa-bolt text-blue-500 icon-pop"></i> Max mód
                   </button>
                 </div>
 
                 <div class="mt-2">
-                  <div class="flex justify-between text-[11px] text-slate-400 mb-1">
-                    <span>Áram korlát: <strong id="target-soc-val" class="text-slate-200 font-mono">16 A</strong></span>
-                    <span id="target-watts-calc" class="font-mono text-emerald-400">11.0 kW</span>
+                  <div class="flex justify-between text-[11px] theme-text-muted mb-1">
+                    <span>Áram korlát: <strong id="target-soc-val" class="font-mono text-slate-200">16 A</strong></span>
+                    <span id="target-watts-calc" class="font-mono text-emerald-500">11.0 kW</span>
                   </div>
-                  <input id="target-soc-slider" type="range" min="6" max="32" value="16" class="w-full accent-emerald-500 bg-slate-800 h-1.5 rounded-lg cursor-pointer">
+                  <input id="target-soc-slider" type="range" min="6" max="32" value="16" class="w-full accent-emerald-500 bg-slate-200 dark:bg-slate-800 h-1.5 rounded-lg cursor-pointer">
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- ROW 2 COL 1: Termelés és fogyasztás (ma) -->
-          <div class="lg:col-span-4 bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-5">
-            <div class="text-sm font-semibold text-slate-200 mb-4">Termelés és fogyasztás (ma)</div>
+          <!-- ROW 2 COL 1: Termelés és fogyasztás -->
+          <div class="lg:col-span-4 theme-card border rounded-2xl p-4 lg:p-5">
+            <div class="text-xs uppercase tracking-wider font-semibold theme-text-muted mb-4">Termelés és fogyasztás (ma)</div>
             <div class="relative h-36 lg:h-40 w-full">
               <svg class="w-full h-full overflow-visible" viewBox="0 0 500 150" preserveAspectRatio="none">
-                <line x1="0" y1="30" x2="500" y2="30" stroke="#1c2436" stroke-dasharray="2 2"/>
-                <line x1="0" y1="75" x2="500" y2="75" stroke="#1c2436" stroke-dasharray="2 2"/>
-                <line x1="0" y1="120" x2="500" y2="120" stroke="#1c2436" stroke-dasharray="2 2"/>
+                <line x1="0" y1="30" x2="500" y2="30" stroke="#64748b" stroke-dasharray="2 2" opacity="0.2"/>
+                <line x1="0" y1="75" x2="500" y2="75" stroke="#64748b" stroke-dasharray="2 2" opacity="0.2"/>
+                <line x1="0" y1="120" x2="500" y2="120" stroke="#64748b" stroke-dasharray="2 2" opacity="0.2"/>
               </svg>
-              <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-2">
+              <div class="flex justify-between text-[10px] theme-text-muted font-mono mt-2">
                 <span>00:00</span>
                 <span>06:00</span>
                 <span>12:00</span>
@@ -413,111 +483,111 @@
           </div>
 
           <!-- ROW 2 COL 2: Akkumulátor Gauge -->
-          <div class="lg:col-span-4 bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-5">
-            <div class="text-sm font-semibold text-slate-200 mb-4">Akkumulátor</div>
+          <div class="lg:col-span-4 theme-card border rounded-2xl p-4 lg:p-5">
+            <div class="text-xs uppercase tracking-wider font-semibold theme-text-muted mb-4">Akkumulátor</div>
             <div class="flex items-center justify-around mb-4">
               <div class="relative w-24 h-24 lg:w-28 lg:h-28 flex items-center justify-center">
                 <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                  <path class="text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                  <path id="battery-radial-circle" class="text-emerald-500 transition-all duration-500" stroke-dasharray="0, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path class="text-slate-200 dark:text-slate-800" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path id="battery-radial-circle" class="text-emerald-500 transition-all duration-500" stroke-dasharray="0, 100" stroke-width="3" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                 </svg>
                 <div class="absolute text-center">
-                  <span id="bat-card-soc" class="text-xl lg:text-2xl font-extrabold text-white font-mono">--%</span>
-                  <div id="bat-card-capacity" class="text-[10px] text-slate-400 font-mono">-- kWh</div>
+                  <span id="bat-card-soc" class="text-xl lg:text-2xl font-bold font-mono">--%</span>
+                  <div id="bat-card-capacity" class="text-[10px] theme-text-muted font-mono">-- kWh</div>
                 </div>
               </div>
               <div class="space-y-3">
                 <div>
-                  <div class="text-[11px] text-slate-400">Töltés</div>
-                  <div id="bat-charge-rate" class="text-base lg:text-lg font-bold text-emerald-400 font-mono">-- kW</div>
+                  <div class="text-[10px] theme-text-muted">Töltés</div>
+                  <div id="bat-charge-rate" class="text-base lg:text-lg font-bold text-emerald-500 font-mono">-- kW</div>
                 </div>
                 <div>
-                  <div class="text-[11px] text-slate-400">Kisütés</div>
-                  <div id="bat-discharge-rate" class="text-base lg:text-lg font-bold text-slate-300 font-mono">-- W</div>
+                  <div class="text-[10px] theme-text-muted">Kisütés</div>
+                  <div id="bat-discharge-rate" class="text-base lg:text-lg font-bold font-mono">-- W</div>
                 </div>
               </div>
             </div>
-            <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-800 text-center text-xs">
+            <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-200 dark:border-slate-800/80 text-center text-xs">
               <div>
-                <div class="text-[10px] text-slate-400">Feszültség</div>
-                <div id="bat-voltage" class="font-mono font-bold text-slate-200">-- V</div>
+                <div class="text-[10px] theme-text-muted">Feszültség</div>
+                <div id="bat-voltage" class="font-mono font-semibold">-- V</div>
               </div>
               <div>
-                <div class="text-[10px] text-slate-400">Áram</div>
-                <div id="bat-current" class="font-mono font-bold text-slate-200">-- A</div>
+                <div class="text-[10px] theme-text-muted">Áram</div>
+                <div id="bat-current" class="font-mono font-semibold">-- A</div>
               </div>
               <div>
-                <div class="text-[10px] text-slate-400">Hőmérséklet</div>
-                <div id="bat-temp" class="font-mono font-bold text-slate-200">-- °C</div>
+                <div class="text-[10px] theme-text-muted">Hőmérséklet</div>
+                <div id="bat-temp" class="font-mono font-semibold">-- °C</div>
               </div>
             </div>
           </div>
 
           <!-- ROW 2 COL 3: Quick Climate Summary -->
-          <div class="lg:col-span-4 bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-5 flex flex-col justify-between">
+          <div class="lg:col-span-4 theme-card border rounded-2xl p-4 lg:p-5 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-3">
-                <div class="text-sm font-semibold text-slate-200">Klímák</div>
-                <button data-tab-link="klima" class="text-xs text-emerald-400 hover:text-emerald-300 font-medium">Megnyitás <i class="fa-solid fa-arrow-right text-[10px]"></i></button>
+                <div class="text-xs uppercase tracking-wider font-semibold theme-text-muted">Klímák</div>
+                <button data-tab-link="klima" class="text-xs text-emerald-500 hover:underline font-medium">Megnyitás <i class="fa-solid fa-arrow-right text-[10px]"></i></button>
               </div>
               <div id="climate-list-summary" class="space-y-2.5">
-                <div class="py-4 text-center text-slate-500 font-mono text-[11px]">Nincsenek adatok</div>
+                <div class="py-4 text-center theme-text-muted font-mono text-[11px]">Nincsenek adatok</div>
               </div>
             </div>
           </div>
 
           <!-- ROW 3 COL 1: Napi összesítés -->
-          <div class="lg:col-span-4 bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-5">
-            <div class="text-sm font-semibold text-slate-200 mb-3">Napi összesítés</div>
+          <div class="lg:col-span-4 theme-card border rounded-2xl p-4 lg:p-5">
+            <div class="text-xs uppercase tracking-wider font-semibold theme-text-muted mb-3">Napi összesítés</div>
             <div class="space-y-2 text-xs">
-              <div class="flex items-center justify-between py-1 border-b border-slate-800/60">
-                <span>Napelem termelés</span>
-                <span id="summary-pv-today" class="font-mono font-bold text-slate-200">-- kWh</span>
+              <div class="flex items-center justify-between py-1 border-b border-slate-200 dark:border-slate-800/80">
+                <span class="theme-text-muted">Napelem termelés</span>
+                <span id="summary-pv-today" class="font-mono font-semibold">-- kWh</span>
               </div>
-              <div class="flex items-center justify-between py-1 border-b border-slate-800/60">
-                <span>Hálózatból vételezett</span>
-                <span id="summary-grid-today" class="font-mono font-bold text-slate-200">-- kWh</span>
+              <div class="flex items-center justify-between py-1 border-b border-slate-200 dark:border-slate-800/80">
+                <span class="theme-text-muted">Hálózatból vételezett</span>
+                <span id="summary-grid-today" class="font-mono font-semibold">-- kWh</span>
               </div>
-              <div class="flex items-center justify-between py-1 border-b border-slate-800/60">
-                <span>Hálózatba táplált</span>
-                <span id="summary-grid-export" class="font-mono font-bold text-slate-200">-- kWh</span>
+              <div class="flex items-center justify-between py-1 border-b border-slate-200 dark:border-slate-800/80">
+                <span class="theme-text-muted">Hálózatba táplált</span>
+                <span id="summary-grid-export" class="font-mono font-semibold">-- kWh</span>
               </div>
-              <div class="flex items-center justify-between py-1 border-b border-slate-800/60">
-                <span>Ház fogyasztás</span>
-                <span id="summary-home-today" class="font-mono font-bold text-slate-200">-- kWh</span>
+              <div class="flex items-center justify-between py-1 border-b border-slate-200 dark:border-slate-800/80">
+                <span class="theme-text-muted">Ház fogyasztás</span>
+                <span id="summary-home-today" class="font-mono font-semibold">-- kWh</span>
               </div>
-              <div class="flex items-center justify-between py-1 border-b border-slate-800/60">
-                <span>Autó töltés</span>
-                <span id="summary-car-charge" class="font-mono font-bold text-slate-200">-- kWh</span>
+              <div class="flex items-center justify-between py-1 border-b border-slate-200 dark:border-slate-800/80">
+                <span class="theme-text-muted">Autó töltés</span>
+                <span id="summary-car-charge" class="font-mono font-semibold">-- kWh</span>
               </div>
-              <div class="flex items-center justify-between py-1 border-b border-slate-800/60">
-                <span>Akkumulátor töltés</span>
-                <span id="summary-battery-charge" class="font-mono font-bold text-slate-200">-- kWh</span>
+              <div class="flex items-center justify-between py-1 border-b border-slate-200 dark:border-slate-800/80">
+                <span class="theme-text-muted">Akkumulátor töltés</span>
+                <span id="summary-battery-charge" class="font-mono font-semibold">-- kWh</span>
               </div>
               <div class="flex items-center justify-between py-1">
-                <span>Akkumulátor kisütés</span>
-                <span id="summary-battery-discharge" class="font-mono font-bold text-slate-200">-- kWh</span>
+                <span class="theme-text-muted">Akkumulátor kisütés</span>
+                <span id="summary-battery-discharge" class="font-mono font-semibold">-- kWh</span>
               </div>
             </div>
           </div>
 
-          <!-- ROW 3 COL 2: Spot Price Chart (EUR/kWh for Slovakia) -->
-          <div class="lg:col-span-4 bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-5">
-            <div class="text-sm font-semibold text-slate-200 mb-1">Energiaár (EUR/kWh)</div>
+          <!-- ROW 3 COL 2: Spot Price Chart (EUR/kWh Slovakia) -->
+          <div class="lg:col-span-4 theme-card border rounded-2xl p-4 lg:p-5">
+            <div class="text-xs uppercase tracking-wider font-semibold theme-text-muted mb-1">Energiaár (EUR/kWh)</div>
             <div class="flex items-baseline justify-between mb-3">
               <div>
-                <span class="text-[11px] text-slate-400">Jelenlegi ár</span>
-                <div id="spot-price-current" class="text-base lg:text-lg font-bold text-emerald-400 font-mono">-- EUR/kWh</div>
+                <span class="text-[10px] theme-text-muted">Jelenlegi ár</span>
+                <div id="spot-price-current" class="text-base lg:text-lg font-bold text-emerald-500 font-mono">-- EUR/kWh</div>
               </div>
               <div class="text-right">
-                <span class="text-[11px] text-slate-400">Bidding Zone</span>
-                <div id="spot-price-next" class="text-xs font-bold text-slate-300 font-mono">SK (Slovakia)</div>
+                <span class="text-[10px] theme-text-muted">Bidding Zone</span>
+                <div id="spot-price-next" class="text-xs font-semibold theme-text-muted font-mono">SK (Slovakia)</div>
               </div>
             </div>
-            <div class="relative h-24 w-full bg-[#070b12]/60 rounded-xl p-2 border border-slate-800/60">
+            <div class="relative h-24 w-full theme-node rounded-xl p-2 border">
               <svg id="price-svg-chart" class="w-full h-full overflow-visible" viewBox="0 0 300 80" preserveAspectRatio="none">
-                <path id="price-path" d="" fill="none" stroke="#10b981" stroke-width="2"/>
-                <path id="price-area" d="" fill="url(#priceLiveGrad)" opacity="0.25"/>
+                <path id="price-path" d="" fill="none" stroke="#10b981" stroke-width="1.5"/>
+                <path id="price-area" d="" fill="url(#priceLiveGrad)" opacity="0.15"/>
                 <defs>
                   <linearGradient id="priceLiveGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stop-color="#10b981" />
@@ -529,10 +599,10 @@
           </div>
 
           <!-- ROW 3 COL 3: Notifications -->
-          <div class="lg:col-span-4 bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-5">
-            <div class="text-sm font-semibold text-slate-200 mb-3">Értesítések</div>
+          <div class="lg:col-span-4 theme-card border rounded-2xl p-4 lg:p-5">
+            <div class="text-xs uppercase tracking-wider font-semibold theme-text-muted mb-3">Értesítések</div>
             <div id="notifications-list" class="space-y-2.5 text-xs">
-              <div class="py-4 text-center text-slate-500 font-mono text-[11px]">Nincsenek új értesítések</div>
+              <div class="py-4 text-center theme-text-muted font-mono text-[11px]">Nincsenek új értesítések</div>
             </div>
           </div>
 
@@ -541,21 +611,21 @@
 
       <!-- VIEW TAB 2: ENERGIA -->
       <section id="view-energia" class="tab-view hidden space-y-4">
-        <div class="bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-6">
-          <h2 class="text-base lg:text-lg font-bold text-white mb-2"><i class="fa-solid fa-bolt text-emerald-400 mr-2"></i>Részletes Energia Mérések</h2>
-          <p class="text-xs text-slate-400 mb-6">Inverter fázisfeszültségek, hatásfok és hálózati tarifák részletezése</p>
+        <div class="theme-card border rounded-2xl p-4 lg:p-6">
+          <h2 class="text-base lg:text-lg font-bold mb-2"><i class="fa-solid fa-bolt text-emerald-500 mr-2 icon-pop"></i>Részletes Energia Mérések</h2>
+          <p class="text-xs theme-text-muted mb-6">Inverter fázisfeszültségek, hatásfok és hálózati tarifák részletezése</p>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs">
-            <div class="bg-[#070b12] p-3 lg:p-4 rounded-xl border border-slate-800">
-              <span class="text-slate-400 block mb-1">L1 Fázisfeszültség</span>
-              <span id="l1-voltage" class="text-base lg:text-lg font-bold text-white">-- V</span>
+            <div class="theme-node p-3 lg:p-4 rounded-xl border">
+              <span class="theme-text-muted block mb-1">L1 Fázisfeszültség</span>
+              <span id="l1-voltage" class="text-base lg:text-lg font-bold">-- V</span>
             </div>
-            <div class="bg-[#070b12] p-3 lg:p-4 rounded-xl border border-slate-800">
-              <span class="text-slate-400 block mb-1">L2 Fázisfeszültség</span>
-              <span id="l2-voltage" class="text-base lg:text-lg font-bold text-white">-- V</span>
+            <div class="theme-node p-3 lg:p-4 rounded-xl border">
+              <span class="theme-text-muted block mb-1">L2 Fázisfeszültség</span>
+              <span id="l2-voltage" class="text-base lg:text-lg font-bold">-- V</span>
             </div>
-            <div class="bg-[#070b12] p-3 lg:p-4 rounded-xl border border-slate-800">
-              <span class="text-slate-400 block mb-1">L3 Fázisfeszültség</span>
-              <span id="l3-voltage" class="text-base lg:text-lg font-bold text-white">-- V</span>
+            <div class="theme-node p-3 lg:p-4 rounded-xl border">
+              <span class="theme-text-muted block mb-1">L3 Fázisfeszültség</span>
+              <span id="l3-voltage" class="text-base lg:text-lg font-bold">-- V</span>
             </div>
           </div>
         </div>
@@ -563,80 +633,76 @@
 
       <!-- VIEW TAB 3: AUTÓ / TÖLTÉS -->
       <section id="view-auto" class="tab-view hidden space-y-4">
-        <div class="bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-6">
-          <h2 class="text-base lg:text-lg font-bold text-white mb-2"><i class="fa-solid fa-car text-blue-400 mr-2"></i>EVCC / Töltés Vezérlőközpont</h2>
-          <p class="text-xs text-slate-400">Autó töltési beállítások, EVCC automatizálási módok és statisztikák</p>
+        <div class="theme-card border rounded-2xl p-4 lg:p-6">
+          <h2 class="text-base lg:text-lg font-bold mb-2"><i class="fa-solid fa-car text-blue-500 mr-2 icon-pop"></i>EVCC / Töltés Vezérlőközpont</h2>
+          <p class="text-xs theme-text-muted">Autó töltési beállítások, EVCC automatizálási módok és statisztikák</p>
         </div>
       </section>
 
-      <!-- VIEW TAB 4: KLÍMA (WITH TARGET TEMPERATURE ADJUSTMENT CONTROLS) -->
+      <!-- VIEW TAB 4: KLÍMA -->
       <section id="view-klima" class="tab-view hidden space-y-4">
-        <div class="bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-6">
-          <h2 class="text-base lg:text-lg font-bold text-white mb-2"><i class="fa-solid fa-snowflake text-sky-400 mr-2"></i>Klíma Vezérlés</h2>
-          <p class="text-xs text-slate-400 mb-6">Helyiségek célhőmérsékletei és klímaberendezések állapota</p>
+        <div class="theme-card border rounded-2xl p-4 lg:p-6">
+          <h2 class="text-base lg:text-lg font-bold mb-2"><i class="fa-solid fa-snowflake text-sky-500 mr-2 icon-pop"></i>Klíma Vezérlés</h2>
+          <p class="text-xs theme-text-muted mb-6">Helyiségek célhőmérsékletei és klímaberendezések állapota</p>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-            <!-- Nappali -->
-            <div class="bg-[#070b12] p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+            <div class="theme-node p-4 rounded-xl border flex items-center justify-between">
               <div>
-                <span class="font-bold text-slate-200 block text-sm">Nappali</span>
-                <span id="klima-nappali-current" class="text-slate-400 font-mono">Mért: --°C</span>
+                <span class="font-semibold block text-sm">Nappali</span>
+                <span id="klima-nappali-current" class="theme-text-muted font-mono">Mért: --°C</span>
               </div>
               <div class="flex items-center gap-3">
-                <div class="flex items-center bg-[#111622] border border-slate-800 rounded-lg font-mono">
-                  <button onclick="adjustClimateTemp('nappali', -0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-r border-slate-800">-</button>
-                  <span id="klima-nappali-target" class="px-3 font-bold text-white">--°C</span>
-                  <button onclick="adjustClimateTemp('nappali', 0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-l border-slate-800">+</button>
+                <div class="flex items-center theme-card border rounded-lg font-mono">
+                  <button onclick="adjustClimateTemp('nappali', -0.5)" class="px-2.5 py-1 theme-text-muted hover:text-emerald-500 border-r">-</button>
+                  <span id="klima-nappali-target" class="px-3 font-bold">--°C</span>
+                  <button onclick="adjustClimateTemp('nappali', 0.5)" class="px-2.5 py-1 theme-text-muted hover:text-emerald-500 border-l">+</button>
                 </div>
-                <button id="klima-nappali-btn" onclick="toggleClimatePower('nappali')" class="px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-500">OFF</button>
+                <button id="klima-nappali-btn" onclick="toggleClimatePower('nappali')" class="px-3 py-1.5 rounded-lg font-semibold theme-node theme-text-muted border">OFF</button>
               </div>
             </div>
 
-            <!-- Háló -->
-            <div class="bg-[#070b12] p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+            <div class="theme-node p-4 rounded-xl border flex items-center justify-between">
               <div>
-                <span class="font-bold text-slate-200 block text-sm">Háló</span>
-                <span id="klima-halo-current" class="text-slate-400 font-mono">Mért: --°C</span>
+                <span class="font-semibold block text-sm">Háló</span>
+                <span id="klima-halo-current" class="theme-text-muted font-mono">Mért: --°C</span>
               </div>
               <div class="flex items-center gap-3">
-                <div class="flex items-center bg-[#111622] border border-slate-800 rounded-lg font-mono">
-                  <button onclick="adjustClimateTemp('halo', -0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-r border-slate-800">-</button>
-                  <span id="klima-halo-target" class="px-3 font-bold text-white">--°C</span>
-                  <button onclick="adjustClimateTemp('halo', 0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-l border-slate-800">+</button>
+                <div class="flex items-center theme-card border rounded-lg font-mono">
+                  <button onclick="adjustClimateTemp('halo', -0.5)" class="px-2.5 py-1 theme-text-muted hover:text-emerald-500 border-r">-</button>
+                  <span id="klima-halo-target" class="px-3 font-bold">--°C</span>
+                  <button onclick="adjustClimateTemp('halo', 0.5)" class="px-2.5 py-1 theme-text-muted hover:text-emerald-500 border-l">+</button>
                 </div>
-                <button id="klima-halo-btn" onclick="toggleClimatePower('halo')" class="px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-500">OFF</button>
+                <button id="klima-halo-btn" onclick="toggleClimatePower('halo')" class="px-3 py-1.5 rounded-lg font-semibold theme-node theme-text-muted border">OFF</button>
               </div>
             </div>
 
-            <!-- Iroda -->
-            <div class="bg-[#070b12] p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+            <div class="theme-node p-4 rounded-xl border flex items-center justify-between">
               <div>
-                <span class="font-bold text-slate-200 block text-sm">Iroda</span>
-                <span id="klima-iroda-current" class="text-slate-400 font-mono">Mért: --°C</span>
+                <span class="font-semibold block text-sm">Iroda</span>
+                <span id="klima-iroda-current" class="theme-text-muted font-mono">Mért: --°C</span>
               </div>
               <div class="flex items-center gap-3">
-                <div class="flex items-center bg-[#111622] border border-slate-800 rounded-lg font-mono">
-                  <button onclick="adjustClimateTemp('iroda', -0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-r border-slate-800">-</button>
-                  <span id="klima-iroda-target" class="px-3 font-bold text-white">--°C</span>
-                  <button onclick="adjustClimateTemp('iroda', 0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-l border-slate-800">+</button>
+                <div class="flex items-center theme-card border rounded-lg font-mono">
+                  <button onclick="adjustClimateTemp('iroda', -0.5)" class="px-2.5 py-1 theme-text-muted hover:text-emerald-500 border-r">-</button>
+                  <span id="klima-iroda-target" class="px-3 font-bold">--°C</span>
+                  <button onclick="adjustClimateTemp('iroda', 0.5)" class="px-2.5 py-1 theme-text-muted hover:text-emerald-500 border-l">+</button>
                 </div>
-                <button id="klima-iroda-btn" onclick="toggleClimatePower('iroda')" class="px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-500">OFF</button>
+                <button id="klima-iroda-btn" onclick="toggleClimatePower('iroda')" class="px-3 py-1.5 rounded-lg font-semibold theme-node theme-text-muted border">OFF</button>
               </div>
             </div>
 
-            <!-- Garázs -->
-            <div class="bg-[#070b12] p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+            <div class="theme-node p-4 rounded-xl border flex items-center justify-between">
               <div>
-                <span class="font-bold text-slate-200 block text-sm">Garázs</span>
-                <span id="klima-garazs-current" class="text-slate-400 font-mono">Mért: --°C</span>
+                <span class="font-semibold block text-sm">Garázs</span>
+                <span id="klima-garazs-current" class="theme-text-muted font-mono">Mért: --°C</span>
               </div>
               <div class="flex items-center gap-3">
-                <div class="flex items-center bg-[#111622] border border-slate-800 rounded-lg font-mono">
-                  <button onclick="adjustClimateTemp('garazs', -0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-r border-slate-800">-</button>
-                  <span id="klima-garazs-target" class="px-3 font-bold text-white">--°C</span>
-                  <button onclick="adjustClimateTemp('garazs', 0.5)" class="px-2.5 py-1 text-slate-400 hover:text-white border-l border-slate-800">+</button>
+                <div class="flex items-center theme-card border rounded-lg font-mono">
+                  <button onclick="adjustClimateTemp('garazs', -0.5)" class="px-2.5 py-1 theme-text-muted hover:text-emerald-500 border-r">-</button>
+                  <span id="klima-garazs-target" class="px-3 font-bold">--°C</span>
+                  <button onclick="adjustClimateTemp('garazs', 0.5)" class="px-2.5 py-1 theme-text-muted hover:text-emerald-500 border-l">+</button>
                 </div>
-                <button id="klima-garazs-btn" onclick="toggleClimatePower('garazs')" class="px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-500">OFF</button>
+                <button id="klima-garazs-btn" onclick="toggleClimatePower('garazs')" class="px-3 py-1.5 rounded-lg font-semibold theme-node theme-text-muted border">OFF</button>
               </div>
             </div>
 
@@ -646,52 +712,132 @@
 
       <!-- VIEW TAB 5: AKKUMULÁTOR -->
       <section id="view-akkumulator" class="tab-view hidden space-y-4">
-        <div class="bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-6">
-          <h2 class="text-base lg:text-lg font-bold text-white mb-2"><i class="fa-solid fa-battery-three-quarters text-emerald-400 mr-2"></i>BMS Diagnostics</h2>
-          <p class="text-xs text-slate-400">Akkumulátor cellafeszültség mérések és hőmérsékleti szenzorok</p>
+        <div class="theme-card border rounded-2xl p-4 lg:p-6">
+          <h2 class="text-base lg:text-lg font-bold mb-2"><i class="fa-solid fa-battery-three-quarters text-emerald-500 mr-2 icon-pop"></i>BMS Diagnostics</h2>
+          <p class="text-xs theme-text-muted">Akkumulátor cellafeszültség mérések és hőmérsékleti szenzorok</p>
         </div>
       </section>
 
       <!-- VIEW TAB 6: GRAFIKONOK -->
       <section id="view-grafikonok" class="tab-view hidden space-y-4">
-        <div class="bg-[#111622] border border-[#1c2436] rounded-2xl p-4 lg:p-6">
-          <h2 class="text-base lg:text-lg font-bold text-white mb-2"><i class="fa-solid fa-chart-line text-amber-400 mr-2"></i>Történeti Trendek</h2>
-          <p class="text-xs text-slate-400">Napi, heti és havi termelési/fogyasztási adatok elemzése</p>
+        <div class="theme-card border rounded-2xl p-4 lg:p-6">
+          <h2 class="text-base lg:text-lg font-bold mb-2"><i class="fa-solid fa-chart-line text-amber-500 mr-2 icon-pop"></i>Történeti Trendek</h2>
+          <p class="text-xs theme-text-muted">Napi, heti és havi termelési/fogyasztási adatok elemzése</p>
         </div>
       </section>
 
     </main>
   </div>
 
-  <!-- BOTTOM MOBILE NAVIGATION BAR (Filtered) -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-[#0c101a] border-t border-[#1c2436] z-40 flex items-center justify-around p-2 lg:hidden">
-    <button data-tab="fooldal" class="mobile-nav-btn active flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0">
-      <i class="fa-solid fa-house text-sm mb-0.5"></i>
+  <!-- BOTTOM MOBILE NAVIGATION BAR -->
+  <nav class="fixed bottom-0 left-0 right-0 theme-sidebar border-t z-40 flex items-center justify-around p-2 lg:hidden">
+    <button data-tab="fooldal" class="mobile-nav-btn active flex flex-col items-center justify-center p-1 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+      <i class="fa-solid fa-house text-sm mb-0.5 icon-pop"></i>
       <span>Főoldal</span>
     </button>
-    <button data-tab="energia" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0">
-      <i class="fa-solid fa-bolt text-sm mb-0.5"></i>
+    <button data-tab="energia" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+      <i class="fa-solid fa-bolt text-sm mb-0.5 icon-pop"></i>
       <span>Energia</span>
     </button>
-    <button data-tab="auto" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0">
-      <i class="fa-solid fa-car text-sm mb-0.5"></i>
+    <button data-tab="auto" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+      <i class="fa-solid fa-car text-sm mb-0.5 icon-pop"></i>
       <span>Autó</span>
     </button>
-    <button data-tab="klima" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0">
-      <i class="fa-solid fa-snowflake text-sm mb-0.5"></i>
+    <button data-tab="klima" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+      <i class="fa-solid fa-snowflake text-sm mb-0.5 icon-pop"></i>
       <span>Klíma</span>
     </button>
-    <button data-tab="akkumulator" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0">
-      <i class="fa-solid fa-battery-three-quarters text-sm mb-0.5"></i>
+    <button data-tab="akkumulator" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+      <i class="fa-solid fa-battery-three-quarters text-sm mb-0.5 icon-pop"></i>
       <span>Akku</span>
     </button>
-    <button data-tab="grafikonok" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] text-slate-400 hover:text-white shrink-0">
-      <i class="fa-solid fa-chart-line text-sm mb-0.5"></i>
+    <button data-tab="grafikonok" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+      <i class="fa-solid fa-chart-line text-sm mb-0.5 icon-pop"></i>
       <span>Grafikon</span>
     </button>
   </nav>
 
   <script>
+    // LIGHT / DARK MODE ENGINE WITH RADIAL WAVE TRANSITION & ICON POP
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeLabel = document.getElementById('theme-label');
+
+    function applyThemeState(isDark) {
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        themeIcon.className = 'fa-solid fa-sun text-amber-400 icon-pop';
+        themeLabel.textContent = 'Világos mód';
+        localStorage.setItem('cobra_theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        themeIcon.className = 'fa-solid fa-moon text-slate-500 icon-pop';
+        themeLabel.textContent = 'Sötét mód';
+        localStorage.setItem('cobra_theme', 'light');
+      }
+
+      // Trigger pop animation on all icons and interactive items
+      triggerIconPop();
+    }
+
+    function triggerIconPop() {
+      const popItems = document.querySelectorAll('.icon-pop, .fa-solid, .fa-regular, .theme-card');
+      popItems.forEach((el, index) => {
+        setTimeout(() => {
+          el.classList.remove('pop-animate');
+          // Force DOM reflow
+          void el.offsetWidth;
+          el.classList.add('pop-animate');
+        }, Math.min(index * 12, 350));
+      });
+    }
+
+    const savedTheme = localStorage.getItem('cobra_theme');
+    if (savedTheme === 'light') {
+      applyThemeState(false);
+    } else {
+      applyThemeState(true);
+    }
+
+    themeToggleBtn.addEventListener('click', (e) => {
+      const isDark = document.documentElement.classList.contains('dark');
+      const nextIsDark = !isDark;
+
+      // Radial Wave Transition starting at button position
+      const rect = themeToggleBtn.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      const endRadius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+      );
+
+      if (document.startViewTransition) {
+        const transition = document.startViewTransition(() => {
+          applyThemeState(nextIsDark);
+        });
+
+        transition.ready.then(() => {
+          document.documentElement.animate(
+            {
+              clipPath: [
+                `circle(0px at ${x}px ${y}px)`,
+                `circle(${endRadius}px at ${x}px ${y}px)`
+              ]
+            },
+            {
+              duration: 650,
+              easing: 'ease-in-out',
+              pseudoElement: '::view-transition-new(root)'
+            }
+          );
+        });
+      } else {
+        // Fallback smooth toggle for browsers without native View Transitions
+        applyThemeState(nextIsDark);
+      }
+    });
+
     // Live Clock
     function updateClock() {
       const now = new Date();
@@ -788,11 +934,11 @@
       const btn = document.getElementById(`klima-${room}-btn`);
       if (climateState[room].power) {
         btn.textContent = 'ON';
-        btn.className = 'px-3 py-1.5 rounded-lg font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+        btn.className = 'px-3 py-1.5 rounded-lg font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
         await callHAService('climate', 'turn_on', { entity_id: `climate.${room}` });
       } else {
         btn.textContent = 'OFF';
-        btn.className = 'px-3 py-1.5 rounded-lg font-bold bg-slate-800 text-slate-500';
+        btn.className = 'px-3 py-1.5 rounded-lg font-semibold theme-node theme-text-muted border';
         await callHAService('climate', 'turn_off', { entity_id: `climate.${room}` });
       }
     }
@@ -864,7 +1010,7 @@
         document.getElementById("status-indicator-ping").classList.remove("hidden");
         document.getElementById("status-indicator-offline").classList.add("hidden");
         document.getElementById("system-status-text").textContent = "Minden rendben";
-        document.getElementById("system-status-text").className = "text-xs font-semibold text-emerald-400";
+        document.getElementById("system-status-text").className = "text-xs font-semibold text-emerald-500";
 
         if (d.solar !== undefined) {
           document.getElementById("stat-solar").textContent = (Number(d.solar)/1000).toFixed(1);
@@ -910,7 +1056,7 @@
         document.getElementById("status-indicator-ping").classList.add("hidden");
         document.getElementById("status-indicator-offline").classList.remove("hidden");
         document.getElementById("system-status-text").textContent = "Nincs kapcsolat";
-        document.getElementById("system-status-text").className = "text-xs font-semibold text-slate-400";
+        document.getElementById("system-status-text").className = "text-xs font-semibold theme-text-muted";
       }
     }
 
