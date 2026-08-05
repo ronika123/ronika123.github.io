@@ -37,7 +37,6 @@
       --text-main: #0f172a;
       --text-muted: #64748b;
       --node-bg: #f1f5f9;
-      --svg-flow-color: #64748b;
     }
 
     .dark {
@@ -48,19 +47,24 @@
       --text-main: #f1f5f9;
       --text-muted: #94a3b8;
       --node-bg: #0b0f19;
-      --svg-flow-color: #475569;
     }
 
     body {
       background-color: var(--bg-main);
       color: var(--text-main);
-      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     .theme-sidebar { background-color: var(--bg-sidebar); border-color: var(--border-color); }
     .theme-card { background-color: var(--bg-card); border-color: var(--border-color); }
     .theme-node { background-color: var(--node-bg); border-color: var(--border-color); }
     .theme-text-muted { color: var(--text-muted); }
+
+    /* iOS 17 Fallback Global Smooth Fade */
+    .theme-fallback-fade, .theme-fallback-fade * {
+      transition: background-color var(--theme-transition-duration, 600ms) ease,
+                  color var(--theme-transition-duration, 600ms) ease,
+                  border-color var(--theme-transition-duration, 600ms) ease !important;
+    }
 
     @keyframes flowLine {
       to { stroke-dashoffset: -20; }
@@ -98,13 +102,11 @@
       animation: elementPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
 
-    /* Strict Android / Chromium View Transitions layer rules */
+    /* Strict Modern View Transitions Layer Rules */
     ::view-transition-old(root),
     ::view-transition-new(root) {
-      animation: none !important;
-      mix-blend-mode: normal !important;
-      height: 100% !important;
-      overflow: hidden !important;
+      animation: none;
+      mix-blend-mode: normal;
     }
 
     ::view-transition-old(root) {
@@ -121,7 +123,7 @@
   <div class="flex flex-1 min-h-screen overflow-hidden pb-16 lg:pb-0">
     
     <!-- LEFT SIDEBAR -->
-    <aside class="w-60 theme-sidebar border-r flex-col justify-between p-4 shrink-0 hidden lg:flex transition-colors">
+    <aside class="w-60 theme-sidebar border-r flex-col justify-between p-4 shrink-0 hidden lg:flex">
       <div>
         <!-- Logo Area -->
         <div class="flex items-center gap-3 px-2 py-3 mb-5">
@@ -759,7 +761,6 @@
   </nav>
 
   <script>
-    // LIGHT / DARK MODE ENGINE WITH EXACT TOUCH ORIGIN & LINEAR SPEED
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const themeIcon = document.getElementById('theme-icon');
     const themeLabel = document.getElementById('theme-label');
@@ -779,48 +780,40 @@
       }
     }
 
-    // Triggers icon pop ONLY when expanding linear wave boundary intersects each element
     function triggerWaveIconPops(originX, originY, maxRadius, waveDuration) {
       waveTimeouts.forEach(t => clearTimeout(t));
       waveTimeouts = [];
 
       const popItems = document.querySelectorAll('.icon-pop');
-      
       popItems.forEach(el => {
-        if (el.offsetParent === null) return; // Skip hidden elements
-
+        if (el.offsetParent === null) return;
         const rect = el.getBoundingClientRect();
         const elX = rect.left + rect.width / 2;
         const elY = rect.top + rect.height / 2;
-        
         const dist = Math.hypot(elX - originX, elY - originY);
         const hitDelay = (dist / maxRadius) * waveDuration;
 
         const t = setTimeout(() => {
           el.classList.remove('pop-animate');
-          void el.offsetWidth; // Force reflow
+          void el.offsetWidth;
           el.classList.add('pop-animate');
         }, hitDelay);
-
         waveTimeouts.push(t);
       });
     }
 
     const savedTheme = localStorage.getItem('cobra_theme');
-    if (savedTheme === 'light') {
-      applyThemeState(false);
-    } else {
-      applyThemeState(true);
-    }
+    if (savedTheme === 'light') applyThemeState(false);
+    else applyThemeState(true);
 
     themeToggleBtn.addEventListener('click', (e) => {
       const isDark = document.documentElement.classList.contains('dark');
       const nextIsDark = !isDark;
-      const waveDuration = 600; // Consistent speed (600ms)
+      const waveDuration = 600;
 
-      // Use exact touch/click event coordinates or fallback to button center
-      const x = (e.clientX !== undefined && e.clientX !== 0) ? e.clientX : (themeToggleBtn.getBoundingClientRect().left + themeToggleBtn.getBoundingClientRect().width / 2);
-      const y = (e.clientY !== undefined && e.clientY !== 0) ? e.clientY : (themeToggleBtn.getBoundingClientRect().top + themeToggleBtn.getBoundingClientRect().height / 2);
+      const btnRect = themeToggleBtn.getBoundingClientRect();
+      const x = (e && e.clientX && e.clientX > 0) ? e.clientX : (btnRect.left + btnRect.width / 2);
+      const y = (e && e.clientY && e.clientY > 0) ? e.clientY : (btnRect.top + btnRect.height / 2);
 
       const endRadius = Math.hypot(
         Math.max(x, window.innerWidth - x),
@@ -833,47 +826,22 @@
         const transition = document.startViewTransition(() => {
           applyThemeState(nextIsDark);
         });
-
         transition.ready.then(() => {
           document.documentElement.animate(
-            {
-              clipPath: [
-                `circle(0px at ${x}px ${y}px)`,
-                `circle(${endRadius}px at ${x}px ${y}px)`
-              ]
-            },
-            {
-              duration: waveDuration,
-              easing: 'linear',
-              pseudoElement: '::view-transition-new(root)'
-            }
+            { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`] },
+            { duration: waveDuration, easing: 'linear', pseudoElement: '::view-transition-new(root)' }
           );
         });
       } else {
-        // Fallback for older browsers: Expanding filled color wave overlay
-        const overlay = document.createElement('div');
-        overlay.style.cssText = `
-          position: fixed;
-          inset: 0;
-          background-color: ${nextIsDark ? '#0b0f19' : '#f8fafc'};
-          z-index: 99999;
-          pointer-events: none;
-          clip-path: circle(0px at ${x}px ${y}px);
-        `;
-        document.body.appendChild(overlay);
-
-        const anim = overlay.animate([
-          { clipPath: `circle(0px at ${x}px ${y}px)` },
-          { clipPath: `circle(${endRadius}px at ${x}px ${y}px)` }
-        ], {
-          duration: waveDuration,
-          easing: 'linear'
-        });
-
-        anim.onfinish = () => {
-          applyThemeState(nextIsDark);
-          overlay.remove();
-        };
+        // Safe, non-disappearing fallback for older WebKit / iOS 17
+        document.documentElement.style.setProperty('--theme-transition-duration', `${waveDuration}ms`);
+        document.body.classList.add('theme-fallback-fade');
+        
+        applyThemeState(nextIsDark);
+        
+        setTimeout(() => {
+          document.body.classList.remove('theme-fallback-fade');
+        }, waveDuration);
       }
     });
 
@@ -893,40 +861,27 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // TAB SWAPPING LOGIC (CLEAN WITHOUT POPS)
+    // TAB SWAPPING LOGIC
     function switchTab(targetTab) {
       document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(b => {
-        if (b.getAttribute('data-tab') === targetTab) {
-          b.classList.add('active');
-        } else {
-          b.classList.remove('active');
-        }
+        if (b.getAttribute('data-tab') === targetTab) b.classList.add('active');
+        else b.classList.remove('active');
       });
 
       document.querySelectorAll('.tab-view').forEach(view => {
-        if (view.id === `view-${targetTab}`) {
-          view.classList.remove('hidden');
-        } else {
-          view.classList.add('hidden');
-        }
+        if (view.id === `view-${targetTab}`) view.classList.remove('hidden');
+        else view.classList.add('hidden');
       });
     }
 
     document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetTab = btn.getAttribute('data-tab');
-        switchTab(targetTab);
-      });
+      btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
     });
 
     document.querySelectorAll('[data-tab-link]').forEach(link => {
-      link.addEventListener('click', () => {
-        const targetTab = link.getAttribute('data-tab-link');
-        switchTab(targetTab);
-      });
+      link.addEventListener('click', () => switchTab(link.getAttribute('data-tab-link')));
     });
 
-    // Catch 3D model load error
     const modelViewer = document.getElementById('bmw-3d-model');
     if (modelViewer) {
       modelViewer.addEventListener('error', () => {
@@ -935,7 +890,6 @@
       });
     }
 
-    // REST API SERVICE CALLER FUNCTION
     async function callHAService(domain, service, serviceData = {}) {
       try {
         const response = await fetch(`/api/services/${domain}/${service}`, {
@@ -949,7 +903,7 @@
       }
     }
 
-    // CLIMATE CONTROLS LOGIC
+    // CLIMATE CONTROLS
     let climateState = {
       nappali: { target: 24.0, power: false },
       halo: { target: 23.0, power: false },
@@ -961,10 +915,7 @@
       if (!climateState[room]) return;
       climateState[room].target = Math.min(30, Math.max(16, climateState[room].target + delta));
       document.getElementById(`klima-${room}-target`).textContent = `${climateState[room].target.toFixed(1)}°C`;
-      await callHAService('climate', 'set_temperature', {
-        entity_id: `climate.${room}`,
-        temperature: climateState[room].target
-      });
+      await callHAService('climate', 'set_temperature', { entity_id: `climate.${room}`, temperature: climateState[room].target });
     }
 
     async function toggleClimatePower(room) {
@@ -982,7 +933,7 @@
       }
     }
 
-    // EV CHARGER BUTTON EVENT HANDLERS
+    // CHARGER SLIDER
     const slider = document.getElementById('target-soc-slider');
     slider.addEventListener('input', (e) => {
       const amps = e.target.value;
@@ -992,20 +943,17 @@
     });
 
     slider.addEventListener('change', async (e) => {
-      const amps = e.target.value;
-      await callHAService('shell_command', 'set_ev_current', { amps: amps, charger: 'deye' });
+      await callHAService('shell_command', 'set_ev_current', { amps: e.target.value, charger: 'deye' });
     });
 
     document.getElementById('btn-start-charge').addEventListener('click', async () => {
-      const currentAmps = slider.value;
-      await callHAService('shell_command', 'set_ev_current', { amps: currentAmps, charger: 'deye' });
+      await callHAService('shell_command', 'set_ev_current', { amps: slider.value, charger: 'deye' });
     });
 
     document.getElementById('btn-stop-charge').addEventListener('click', async () => {
       await callHAService('shell_command', 'stop_ev_charge');
     });
 
-    // Fetch Slovakia (SK) Spot Prices from Energy-Charts API in EUR/kWh
     async function fetchSpotPrices() {
       try {
         const res = await fetch('https://api.energy-charts.info/price?bzn=SK');
@@ -1013,8 +961,7 @@
           const data = await res.json();
           if (data && data.price && data.price.length) {
             const currentHour = new Date().getHours();
-            const eurMWh = data.price[currentHour] || data.price[0];
-            const eurKWh = eurMWh / 1000;
+            const eurKWh = (data.price[currentHour] || data.price[0]) / 1000;
             document.getElementById('spot-price-current').textContent = `${eurKWh.toFixed(3)} EUR/kWh`;
 
             const svgPath = document.getElementById('price-path');
@@ -1038,14 +985,12 @@
     }
     fetchSpotPrices();
 
-    // Fetch Telemetry from /local/energia/data_v3.json
     async function loadData() {
       try {
         const r = await fetch("/local/energia/data_v3.json?x=" + Date.now());
         if (!r.ok) throw new Error("Offline");
         
         const d = await r.json();
-
         document.getElementById("status-indicator-ping").classList.remove("hidden");
         document.getElementById("status-indicator-offline").classList.add("hidden");
         document.getElementById("system-status-text").textContent = "Minden rendben";
@@ -1076,7 +1021,6 @@
           document.getElementById("car-power-label").textContent = cKw + " kW";
         }
 
-        // Climate Readings from JSON if provided
         if (d.climates) {
           ['nappali', 'halo', 'iroda', 'garazs'].forEach(room => {
             if (d.climates[room]) {
@@ -1090,7 +1034,6 @@
             }
           });
         }
-
       } catch (e) {
         document.getElementById("status-indicator-ping").classList.add("hidden");
         document.getElementById("status-indicator-offline").classList.remove("hidden");
@@ -1098,10 +1041,10 @@
         document.getElementById("system-status-text").className = "text-xs font-semibold theme-text-muted";
       }
     }
-
     loadData();
     setInterval(loadData, 3000);
   </script>
 </body>
 </html>
+
 
