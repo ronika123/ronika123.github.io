@@ -37,6 +37,7 @@
       --text-main: #0f172a;
       --text-muted: #64748b;
       --node-bg: #f1f5f9;
+      --svg-flow-color: #64748b;
     }
 
     .dark {
@@ -47,24 +48,19 @@
       --text-main: #f1f5f9;
       --text-muted: #94a3b8;
       --node-bg: #0b0f19;
+      --svg-flow-color: #475569;
     }
 
     body {
       background-color: var(--bg-main);
       color: var(--text-main);
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     .theme-sidebar { background-color: var(--bg-sidebar); border-color: var(--border-color); }
     .theme-card { background-color: var(--bg-card); border-color: var(--border-color); }
     .theme-node { background-color: var(--node-bg); border-color: var(--border-color); }
     .theme-text-muted { color: var(--text-muted); }
-
-    /* iOS 17 Fallback Global Smooth Fade */
-    .theme-fallback-fade, .theme-fallback-fade * {
-      transition: background-color var(--theme-transition-duration, 600ms) ease,
-                  color var(--theme-transition-duration, 600ms) ease,
-                  border-color var(--theme-transition-duration, 600ms) ease !important;
-    }
 
     @keyframes flowLine {
       to { stroke-dashoffset: -20; }
@@ -101,21 +97,6 @@
     .pop-animate {
       animation: elementPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
-
-    /* Strict Modern View Transitions Layer Rules */
-    ::view-transition-old(root),
-    ::view-transition-new(root) {
-      animation: none;
-      mix-blend-mode: normal;
-    }
-
-    ::view-transition-old(root) {
-      z-index: 1;
-    }
-
-    ::view-transition-new(root) {
-      z-index: 9999;
-    }
   </style>
 </head>
 <body class="font-sans min-h-screen flex flex-col antialiased selection:bg-emerald-500/20">
@@ -123,7 +104,7 @@
   <div class="flex flex-1 min-h-screen overflow-hidden pb-16 lg:pb-0">
     
     <!-- LEFT SIDEBAR -->
-    <aside class="w-60 theme-sidebar border-r flex-col justify-between p-4 shrink-0 hidden lg:flex">
+    <aside class="w-60 theme-sidebar border-r flex-col justify-between p-4 shrink-0 hidden lg:flex transition-colors">
       <div>
         <!-- Logo Area -->
         <div class="flex items-center gap-3 px-2 py-3 mb-5">
@@ -169,22 +150,25 @@
         </nav>
       </div>
 
-      <!-- System Status Footer -->
-      <div class="theme-card rounded-xl p-3 border">
-        <div class="text-[10px] uppercase tracking-wider font-semibold theme-text-muted mb-1">Rendszer állapot</div>
+      <!-- System Status Footer (Clickable to open Setup) -->
+      <button onclick="openSetupModal()" class="w-full theme-card rounded-xl p-3 border hover:border-emerald-500/50 transition cursor-pointer text-left">
+        <div class="text-[10px] uppercase tracking-wider font-semibold theme-text-muted mb-1 flex justify-between">
+          <span>Rendszer állapot</span>
+          <i class="fa-solid fa-gear"></i>
+        </div>
         <div class="flex items-center gap-2 mb-2">
           <span id="status-indicator-ping" class="relative flex h-2 w-2 hidden">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
           <span id="status-indicator-offline" class="w-2 h-2 rounded-full bg-slate-500"></span>
-          <span id="system-status-text" class="text-xs font-medium theme-text-muted">Nincs kapcsolat</span>
+          <span id="system-status-text" class="text-xs font-medium theme-text-muted">Nincs konfigurálva</span>
         </div>
         <div class="flex items-center justify-between text-[10px] theme-text-muted pt-1.5 border-t border-slate-200 dark:border-slate-800">
           <span>Frissítve:</span>
           <span id="system-time-update" class="font-mono">--:--:--</span>
         </div>
-      </div>
+      </button>
     </aside>
 
     <!-- MAIN DASHBOARD CONTENT -->
@@ -214,11 +198,16 @@
             </div>
           </div>
 
-          <!-- Light / Dark Mode Toggle Button -->
-          <button id="theme-toggle-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium theme-card border theme-text-muted hover:text-slate-200 transition">
-            <i id="theme-icon" class="fa-solid fa-moon icon-pop"></i>
-            <span id="theme-label" class="hidden sm:inline">Sötét mód</span>
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="openSetupModal()" class="lg:hidden flex items-center justify-center w-8 h-8 rounded-xl theme-card border theme-text-muted hover:text-emerald-500 transition">
+              <i class="fa-solid fa-gear"></i>
+            </button>
+            <!-- Light / Dark Mode Toggle Button -->
+            <button id="theme-toggle-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium theme-card border theme-text-muted hover:text-slate-200 transition">
+              <i id="theme-icon" class="fa-solid fa-moon icon-pop"></i>
+              <span id="theme-label" class="hidden sm:inline">Sötét mód</span>
+            </button>
+          </div>
         </div>
 
         <!-- TOP STAT CARDS -->
@@ -732,6 +721,30 @@
     </main>
   </div>
 
+  <!-- SETUP MODAL (FOR HOME ASSISTANT TOKEN) -->
+  <div id="setup-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeSetupModal()"></div>
+    <div class="relative w-[90%] max-w-md theme-card border rounded-2xl p-6 shadow-2xl z-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold"><i class="fa-solid fa-link text-emerald-500 mr-2"></i>HA Kapcsolat Beállítása</h2>
+        <button onclick="closeSetupModal()" class="text-slate-400 hover:text-emerald-500"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <p class="text-xs theme-text-muted mb-4">A gombok működéséhez add meg a Home Assistant elérhetőségedet és egy Long-Lived Access Token-t. Ez csak a te eszközödön (localStorage) kerül mentésre.</p>
+      
+      <div class="space-y-4 text-sm">
+        <div>
+          <label class="block font-semibold mb-1">HA URL (pl. https://home.mydomain.com)</label>
+          <input id="setup-url" type="text" class="w-full theme-node border rounded-xl p-2.5 font-mono text-xs focus:outline-none focus:border-emerald-500" placeholder="http://192.168.x.x:8123">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Long-Lived Access Token</label>
+          <input id="setup-token" type="password" class="w-full theme-node border rounded-xl p-2.5 font-mono text-xs focus:outline-none focus:border-emerald-500" placeholder="eyJhbGciOiJIUzI1NiIs...">
+        </div>
+        <button onclick="saveSetup()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition">Mentés & Kapcsolódás</button>
+      </div>
+    </div>
+  </div>
+
   <!-- BOTTOM MOBILE NAVIGATION BAR -->
   <nav class="fixed bottom-0 left-0 right-0 theme-sidebar border-t z-40 flex items-center justify-around p-2 lg:hidden">
     <button data-tab="fooldal" class="mobile-nav-btn active flex flex-col items-center justify-center p-1 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
@@ -783,7 +796,6 @@
     function triggerWaveIconPops(originX, originY, maxRadius, waveDuration) {
       waveTimeouts.forEach(t => clearTimeout(t));
       waveTimeouts = [];
-
       const popItems = document.querySelectorAll('.icon-pop');
       popItems.forEach(el => {
         if (el.offsetParent === null) return;
@@ -814,18 +826,12 @@
       const btnRect = themeToggleBtn.getBoundingClientRect();
       const x = (e && e.clientX && e.clientX > 0) ? e.clientX : (btnRect.left + btnRect.width / 2);
       const y = (e && e.clientY && e.clientY > 0) ? e.clientY : (btnRect.top + btnRect.height / 2);
-
-      const endRadius = Math.hypot(
-        Math.max(x, window.innerWidth - x),
-        Math.max(y, window.innerHeight - y)
-      );
+      const endRadius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
 
       triggerWaveIconPops(x, y, endRadius, waveDuration);
 
-      if (document.startViewTransition) {
-        const transition = document.startViewTransition(() => {
-          applyThemeState(nextIsDark);
-        });
+      if (document.startViewTransition && !navigator.userAgent.match(/iPad|iPhone|iPod/)) {
+        const transition = document.startViewTransition(() => applyThemeState(nextIsDark));
         transition.ready.then(() => {
           document.documentElement.animate(
             { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`] },
@@ -833,72 +839,91 @@
           );
         });
       } else {
-        // Safe, non-disappearing fallback for older WebKit / iOS 17
-        document.documentElement.style.setProperty('--theme-transition-duration', `${waveDuration}ms`);
-        document.body.classList.add('theme-fallback-fade');
-        
-        applyThemeState(nextIsDark);
-        
-        setTimeout(() => {
-          document.body.classList.remove('theme-fallback-fade');
-        }, waveDuration);
+        const overlay = document.createElement('div');
+        overlay.id = 'theme-mask-overlay';
+        overlay.style.backgroundColor = nextIsDark ? '#0b0f19' : '#f8fafc';
+        overlay.style.clipPath = `circle(0px at ${x}px ${y}px)`;
+        overlay.style.webkitClipPath = `circle(0px at ${x}px ${y}px)`;
+        document.body.appendChild(overlay);
+
+        const anim = overlay.animate([
+          { clipPath: `circle(0px at ${x}px ${y}px)`, webkitClipPath: `circle(0px at ${x}px ${y}px)` },
+          { clipPath: `circle(${endRadius}px at ${x}px ${y}px)`, webkitClipPath: `circle(${endRadius}px at ${x}px ${y}px)` }
+        ], { duration: waveDuration, easing: 'linear' });
+
+        anim.onfinish = () => {
+          applyThemeState(nextIsDark);
+          overlay.remove();
+        };
       }
     });
 
-    // Live Clock
     function updateClock() {
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
       const seconds = String(now.getSeconds()).padStart(2, '0');
-      
       document.getElementById('live-clock').textContent = `${hours}:${minutes}`;
       document.getElementById('system-time-update').textContent = `${hours}:${minutes}:${seconds}`;
-      
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'long' };
-      document.getElementById('live-date').textContent = now.toLocaleDateString('hu-HU', options);
+      document.getElementById('live-date').textContent = now.toLocaleDateString('hu-HU', { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'long' });
     }
     setInterval(updateClock, 1000);
     updateClock();
 
-    // TAB SWAPPING LOGIC
     function switchTab(targetTab) {
       document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(b => {
         if (b.getAttribute('data-tab') === targetTab) b.classList.add('active');
         else b.classList.remove('active');
       });
-
       document.querySelectorAll('.tab-view').forEach(view => {
         if (view.id === `view-${targetTab}`) view.classList.remove('hidden');
         else view.classList.add('hidden');
       });
     }
 
-    document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(btn => {
-      btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
-    });
+    document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
+    document.querySelectorAll('[data-tab-link]').forEach(link => link.addEventListener('click', () => switchTab(link.getAttribute('data-tab-link'))));
 
-    document.querySelectorAll('[data-tab-link]').forEach(link => {
-      link.addEventListener('click', () => switchTab(link.getAttribute('data-tab-link')));
-    });
+    // SETUP MODAL & HA API CALLS
+    function openSetupModal() {
+      document.getElementById('setup-url').value = localStorage.getItem('ha_url') || '';
+      document.getElementById('setup-token').value = localStorage.getItem('ha_token') || '';
+      document.getElementById('setup-modal').classList.remove('hidden');
+    }
 
-    const modelViewer = document.getElementById('bmw-3d-model');
-    if (modelViewer) {
-      modelViewer.addEventListener('error', () => {
-        const img = document.getElementById('bmw-image');
-        if (img) img.style.display = 'block';
-      });
+    function closeSetupModal() {
+      document.getElementById('setup-modal').classList.add('hidden');
+    }
+
+    function saveSetup() {
+      localStorage.setItem('ha_url', document.getElementById('setup-url').value.replace(/\/$/, ""));
+      localStorage.setItem('ha_token', document.getElementById('setup-token').value);
+      closeSetupModal();
+      loadData(); // Re-test connection immediately
     }
 
     async function callHAService(domain, service, serviceData = {}) {
+      const haUrl = localStorage.getItem('ha_url');
+      const haToken = localStorage.getItem('ha_token');
+
+      if (!haUrl || !haToken) {
+        alert("Nincs beállítva a Home Assistant hozzáférés! Kérlek kattints a 'Rendszer állapot' fogaskerék ikonra a beállításhoz.");
+        openSetupModal();
+        return false;
+      }
+
       try {
-        const response = await fetch(`/api/services/${domain}/${service}`, {
+        const response = await fetch(`${haUrl}/api/services/${domain}/${service}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${haToken}`
+          },
           body: JSON.stringify(serviceData)
         });
         return response.ok;
       } catch (err) {
+        console.error("API Error", err);
         return false;
       }
     }
@@ -933,7 +958,7 @@
       }
     }
 
-    // CHARGER SLIDER
+    // EV CHARGER BUTTON EVENT HANDLERS
     const slider = document.getElementById('target-soc-slider');
     slider.addEventListener('input', (e) => {
       const amps = e.target.value;
@@ -961,24 +986,14 @@
           const data = await res.json();
           if (data && data.price && data.price.length) {
             const currentHour = new Date().getHours();
-            const eurKWh = (data.price[currentHour] || data.price[0]) / 1000;
-            document.getElementById('spot-price-current').textContent = `${eurKWh.toFixed(3)} EUR/kWh`;
-
+            document.getElementById('spot-price-current').textContent = `${(data.price[currentHour] / 1000).toFixed(3)} EUR/kWh`;
             const svgPath = document.getElementById('price-path');
             const svgArea = document.getElementById('price-area');
             const prices = data.price.slice(0, 24);
-            const minP = Math.min(...prices);
-            const maxP = Math.max(...prices);
-
-            const points = prices.map((val, idx) => {
-              const x = (idx / (prices.length - 1)) * 300;
-              const y = 70 - ((val - minP) / (maxP - minP || 1)) * 55;
-              return `${x.toFixed(1)},${y.toFixed(1)}`;
-            });
-
-            const dLine = 'M ' + points.join(' L ');
-            svgPath.setAttribute('d', dLine);
-            svgArea.setAttribute('d', dLine + ' L 300,80 L 0,80 Z');
+            const minP = Math.min(...prices), maxP = Math.max(...prices);
+            const points = prices.map((val, idx) => `${(idx / 23 * 300).toFixed(1)},${(70 - ((val - minP) / (maxP - minP || 1)) * 55).toFixed(1)}`);
+            svgPath.setAttribute('d', 'M ' + points.join(' L '));
+            svgArea.setAttribute('d', 'M ' + points.join(' L ') + ' L 300,80 L 0,80 Z');
           }
         }
       } catch (e) {}
@@ -989,50 +1004,27 @@
       try {
         const r = await fetch("/local/energia/data_v3.json?x=" + Date.now());
         if (!r.ok) throw new Error("Offline");
-        
         const d = await r.json();
+        
         document.getElementById("status-indicator-ping").classList.remove("hidden");
         document.getElementById("status-indicator-offline").classList.add("hidden");
-        document.getElementById("system-status-text").textContent = "Minden rendben";
+        document.getElementById("system-status-text").textContent = "Aktív (Olvasás)";
         document.getElementById("system-status-text").className = "text-xs font-semibold text-emerald-500";
 
-        if (d.solar !== undefined) {
-          document.getElementById("stat-solar").textContent = (Number(d.solar)/1000).toFixed(1);
-          document.getElementById("flow-solar").textContent = (Number(d.solar)/1000).toFixed(1) + " kW";
-        }
-        if (d.home !== undefined) {
-          document.getElementById("stat-house").textContent = (Number(d.home)/1000).toFixed(1);
-          document.getElementById("flow-house").textContent = (Number(d.home)/1000).toFixed(1) + " kW";
-        }
+        if (d.solar !== undefined) { document.getElementById("stat-solar").textContent = (Number(d.solar)/1000).toFixed(1); document.getElementById("flow-solar").textContent = (Number(d.solar)/1000).toFixed(1) + " kW"; }
+        if (d.home !== undefined) { document.getElementById("stat-house").textContent = (Number(d.home)/1000).toFixed(1); document.getElementById("flow-house").textContent = (Number(d.home)/1000).toFixed(1) + " kW"; }
         if (d.battery !== undefined) {
           document.getElementById("stat-battery-percent").textContent = d.battery;
           document.getElementById("flow-battery-soc").textContent = d.battery + "%";
           document.getElementById("bat-card-soc").textContent = d.battery + "%";
           document.getElementById("battery-radial-circle").setAttribute("stroke-dasharray", `${d.battery}, 100`);
         }
-        if (d.grid !== undefined) {
-          document.getElementById("stat-grid").textContent = d.grid;
-          document.getElementById("flow-grid").textContent = d.grid + " W";
-        }
+        if (d.grid !== undefined) { document.getElementById("stat-grid").textContent = d.grid; document.getElementById("flow-grid").textContent = d.grid + " W"; }
         if (d.car !== undefined) {
           const cKw = (Number(d.car)/1000).toFixed(1);
           document.getElementById("stat-car-power").textContent = cKw;
           document.getElementById("flow-car-power").textContent = cKw + " kW";
           document.getElementById("car-power-label").textContent = cKw + " kW";
-        }
-
-        if (d.climates) {
-          ['nappali', 'halo', 'iroda', 'garazs'].forEach(room => {
-            if (d.climates[room]) {
-              if (d.climates[room].temp !== undefined) {
-                document.getElementById(`klima-${room}-current`).textContent = `Mért: ${d.climates[room].temp}°C`;
-              }
-              if (d.climates[room].target !== undefined) {
-                climateState[room].target = d.climates[room].target;
-                document.getElementById(`klima-${room}-target`).textContent = `${d.climates[room].target}°C`;
-              }
-            }
-          });
         }
       } catch (e) {
         document.getElementById("status-indicator-ping").classList.add("hidden");
@@ -1043,6 +1035,12 @@
     }
     loadData();
     setInterval(loadData, 3000);
+
+    // Initial config check
+    if (!localStorage.getItem('ha_token')) {
+      document.getElementById("system-status-text").textContent = "Nincs konfigurálva";
+      document.getElementById("system-status-text").className = "text-xs font-semibold text-amber-500";
+    }
   </script>
 </body>
 </html>
