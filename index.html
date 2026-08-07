@@ -37,7 +37,6 @@
       --text-main: #0f172a;
       --text-muted: #64748b;
       --node-bg: #f1f5f9;
-      --svg-flow-color: #64748b;
     }
 
     .dark {
@@ -48,19 +47,24 @@
       --text-main: #f1f5f9;
       --text-muted: #94a3b8;
       --node-bg: #0b0f19;
-      --svg-flow-color: #475569;
     }
 
     body {
       background-color: var(--bg-main);
       color: var(--text-main);
-      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     .theme-sidebar { background-color: var(--bg-sidebar); border-color: var(--border-color); }
     .theme-card { background-color: var(--bg-card); border-color: var(--border-color); }
     .theme-node { background-color: var(--node-bg); border-color: var(--border-color); }
     .theme-text-muted { color: var(--text-muted); }
+
+    /* iOS 17 Fallback Global Smooth Fade */
+    .theme-fallback-fade, .theme-fallback-fade * {
+      transition: background-color var(--theme-transition-duration, 600ms) ease,
+                  color var(--theme-transition-duration, 600ms) ease,
+                  border-color var(--theme-transition-duration, 600ms) ease !important;
+    }
 
     @keyframes flowLine {
       to { stroke-dashoffset: -20; }
@@ -97,6 +101,21 @@
     .pop-animate {
       animation: elementPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
+
+    /* Strict Modern View Transitions Layer Rules */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+      mix-blend-mode: normal;
+    }
+
+    ::view-transition-old(root) {
+      z-index: 1;
+    }
+
+    ::view-transition-new(root) {
+      z-index: 9999;
+    }
   </style>
 </head>
 <body class="font-sans min-h-screen flex flex-col antialiased selection:bg-emerald-500/20">
@@ -104,7 +123,7 @@
   <div class="flex flex-1 min-h-screen overflow-hidden pb-16 lg:pb-0">
     
     <!-- LEFT SIDEBAR -->
-    <aside class="w-60 theme-sidebar border-r flex-col justify-between p-4 shrink-0 hidden lg:flex transition-colors">
+    <aside class="w-60 theme-sidebar border-r flex-col justify-between p-4 shrink-0 hidden lg:flex">
       <div>
         <!-- Logo Area -->
         <div class="flex items-center gap-3 px-2 py-3 mb-5">
@@ -830,8 +849,10 @@
 
       triggerWaveIconPops(x, y, endRadius, waveDuration);
 
-      if (document.startViewTransition && !navigator.userAgent.match(/iPad|iPhone|iPod/)) {
-        const transition = document.startViewTransition(() => applyThemeState(nextIsDark));
+      if (document.startViewTransition) {
+        const transition = document.startViewTransition(() => {
+          applyThemeState(nextIsDark);
+        });
         transition.ready.then(() => {
           document.documentElement.animate(
             { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`] },
@@ -839,25 +860,19 @@
           );
         });
       } else {
-        const overlay = document.createElement('div');
-        overlay.id = 'theme-mask-overlay';
-        overlay.style.backgroundColor = nextIsDark ? '#0b0f19' : '#f8fafc';
-        overlay.style.clipPath = `circle(0px at ${x}px ${y}px)`;
-        overlay.style.webkitClipPath = `circle(0px at ${x}px ${y}px)`;
-        document.body.appendChild(overlay);
-
-        const anim = overlay.animate([
-          { clipPath: `circle(0px at ${x}px ${y}px)`, webkitClipPath: `circle(0px at ${x}px ${y}px)` },
-          { clipPath: `circle(${endRadius}px at ${x}px ${y}px)`, webkitClipPath: `circle(${endRadius}px at ${x}px ${y}px)` }
-        ], { duration: waveDuration, easing: 'linear' });
-
-        anim.onfinish = () => {
-          applyThemeState(nextIsDark);
-          overlay.remove();
-        };
+        // Safe, non-disappearing fallback for older WebKit / iOS 17
+        document.documentElement.style.setProperty('--theme-transition-duration', `${waveDuration}ms`);
+        document.body.classList.add('theme-fallback-fade');
+        
+        applyThemeState(nextIsDark);
+        
+        setTimeout(() => {
+          document.body.classList.remove('theme-fallback-fade');
+        }, waveDuration);
       }
     });
 
+    // Live Clock
     function updateClock() {
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, '0');
@@ -884,22 +899,12 @@
     document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
     document.querySelectorAll('[data-tab-link]').forEach(link => link.addEventListener('click', () => switchTab(link.getAttribute('data-tab-link'))));
 
-    // SETUP MODAL & HA API CALLS
-    function openSetupModal() {
-      document.getElementById('setup-url').value = localStorage.getItem('ha_url') || '';
-      document.getElementById('setup-token').value = localStorage.getItem('ha_token') || '';
-      document.getElementById('setup-modal').classList.remove('hidden');
-    }
-
-    function closeSetupModal() {
-      document.getElementById('setup-modal').classList.add('hidden');
-    }
-
-    function saveSetup() {
-      localStorage.setItem('ha_url', document.getElementById('setup-url').value.replace(/\/$/, ""));
-      localStorage.setItem('ha_token', document.getElementById('setup-token').value);
-      closeSetupModal();
-      loadData(); // Re-test connection immediately
+    const modelViewer = document.getElementById('bmw-3d-model');
+    if (modelViewer) {
+      modelViewer.addEventListener('error', () => {
+        const img = document.getElementById('bmw-image');
+        if (img) img.style.display = 'block';
+      });
     }
 
     async function callHAService(domain, service, serviceData = {}) {
@@ -926,6 +931,24 @@
         console.error("API Error", err);
         return false;
       }
+    }
+
+    // SETUP MODAL & HA API CALLS
+    function openSetupModal() {
+      document.getElementById('setup-url').value = localStorage.getItem('ha_url') || '';
+      document.getElementById('setup-token').value = localStorage.getItem('ha_token') || '';
+      document.getElementById('setup-modal').classList.remove('hidden');
+    }
+
+    function closeSetupModal() {
+      document.getElementById('setup-modal').classList.add('hidden');
+    }
+
+    function saveSetup() {
+      localStorage.setItem('ha_url', document.getElementById('setup-url').value.replace(/\/$/, ""));
+      localStorage.setItem('ha_token', document.getElementById('setup-token').value);
+      closeSetupModal();
+      loadData(); // Re-test connection immediately
     }
 
     // CLIMATE CONTROLS
@@ -958,7 +981,7 @@
       }
     }
 
-    // EV CHARGER BUTTON EVENT HANDLERS
+    // CHARGER SLIDER
     const slider = document.getElementById('target-soc-slider');
     slider.addEventListener('input', (e) => {
       const amps = e.target.value;
@@ -986,7 +1009,9 @@
           const data = await res.json();
           if (data && data.price && data.price.length) {
             const currentHour = new Date().getHours();
-            document.getElementById('spot-price-current').textContent = `${(data.price[currentHour] / 1000).toFixed(3)} EUR/kWh`;
+            const eurKWh = (data.price[currentHour] || data.price[0]) / 1000;
+            document.getElementById('spot-price-current').textContent = `${eurKWh.toFixed(3)} EUR/kWh`;
+
             const svgPath = document.getElementById('price-path');
             const svgArea = document.getElementById('price-area');
             const prices = data.price.slice(0, 24);
@@ -1026,6 +1051,20 @@
           document.getElementById("flow-car-power").textContent = cKw + " kW";
           document.getElementById("car-power-label").textContent = cKw + " kW";
         }
+
+        if (d.climates) {
+          ['nappali', 'halo', 'iroda', 'garazs'].forEach(room => {
+            if (d.climates[room]) {
+              if (d.climates[room].temp !== undefined) {
+                document.getElementById(`klima-${room}-current`).textContent = `Mért: ${d.climates[room].temp}°C`;
+              }
+              if (d.climates[room].target !== undefined) {
+                climateState[room].target = d.climates[room].target;
+                document.getElementById(`klima-${room}-target`).textContent = `${d.climates[room].target}°C`;
+              }
+            }
+          });
+        }
       } catch (e) {
         document.getElementById("status-indicator-ping").classList.add("hidden");
         document.getElementById("status-indicator-offline").classList.remove("hidden");
@@ -1044,5 +1083,3 @@
   </script>
 </body>
 </html>
-
-
