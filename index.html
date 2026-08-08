@@ -166,6 +166,17 @@
             <i class="fa-solid fa-chart-line w-4 text-center icon-pop"></i>
             <span>Grafikonok</span>
           </button>
+          
+          <!-- Új hivatkozások a többi apphoz -->
+          <div class="h-px bg-slate-200 dark:bg-slate-800 my-2"></div>
+          <button onclick="window.location.href='Gemini.html'" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs theme-text-muted hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-transparent transition text-left">
+            <i class="fa-solid fa-brain w-4 text-center icon-pop"></i>
+            <span>Gemini AI</span>
+          </button>
+          <button onclick="window.location.href='chatgpt.html'" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs theme-text-muted hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-transparent transition text-left">
+            <i class="fa-solid fa-robot w-4 text-center icon-pop"></i>
+            <span>ChatGPT</span>
+          </button>
         </nav>
       </div>
 
@@ -765,30 +776,40 @@
   </div>
 
   <!-- BOTTOM MOBILE NAVIGATION BAR -->
-  <nav class="fixed bottom-0 left-0 right-0 theme-sidebar border-t z-40 flex items-center justify-around p-2 lg:hidden">
-    <button data-tab="fooldal" class="mobile-nav-btn active flex flex-col items-center justify-center p-1 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+  <nav class="fixed bottom-0 left-0 right-0 theme-sidebar border-t z-40 flex items-center justify-start overflow-x-auto p-2 gap-2 lg:hidden scroll-smooth">
+    <button data-tab="fooldal" class="mobile-nav-btn active flex flex-col items-center justify-center p-1 px-3 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
       <i class="fa-solid fa-house text-sm mb-0.5"></i>
       <span>Főoldal</span>
     </button>
-    <button data-tab="energia" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+    <button data-tab="energia" class="mobile-nav-btn flex flex-col items-center justify-center p-1 px-3 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
       <i class="fa-solid fa-bolt text-sm mb-0.5"></i>
       <span>Energia</span>
     </button>
-    <button data-tab="auto" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+    <button data-tab="auto" class="mobile-nav-btn flex flex-col items-center justify-center p-1 px-3 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
       <i class="fa-solid fa-car text-sm mb-0.5"></i>
       <span>Autó</span>
     </button>
-    <button data-tab="klima" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+    <button data-tab="klima" class="mobile-nav-btn flex flex-col items-center justify-center p-1 px-3 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
       <i class="fa-solid fa-snowflake text-sm mb-0.5"></i>
       <span>Klíma</span>
     </button>
-    <button data-tab="akkumulator" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+    <button data-tab="akkumulator" class="mobile-nav-btn flex flex-col items-center justify-center p-1 px-3 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
       <i class="fa-solid fa-battery-three-quarters text-sm mb-0.5"></i>
       <span>Akku</span>
     </button>
-    <button data-tab="grafikonok" class="mobile-nav-btn flex flex-col items-center justify-center p-1 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+    <button data-tab="grafikonok" class="mobile-nav-btn flex flex-col items-center justify-center p-1 px-3 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0 border-r border-slate-200 dark:border-slate-800 pr-4 mr-1">
       <i class="fa-solid fa-chart-line text-sm mb-0.5"></i>
       <span>Grafikon</span>
+    </button>
+    
+    <!-- Új hivatkozások a többi apphoz mobil nézetben -->
+    <button onclick="window.location.href='Gemini.html'" class="flex flex-col items-center justify-center p-1 px-3 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+      <i class="fa-solid fa-brain text-sm mb-0.5"></i>
+      <span>Gemini</span>
+    </button>
+    <button onclick="window.location.href='chatgpt.html'" class="flex flex-col items-center justify-center p-1 px-3 rounded-xl text-[10px] theme-text-muted hover:text-emerald-500 shrink-0">
+      <i class="fa-solid fa-robot text-sm mb-0.5"></i>
+      <span>ChatGPT</span>
     </button>
   </nav>
 
@@ -1083,3 +1104,5 @@
   </script>
 </body>
 </html>
+
+
